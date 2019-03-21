@@ -9,7 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class AccountMapper implements RowMapper<Account> {
+public class AccountRowMapper implements RowMapper<Account> {
     @Nullable
     @Override
     public Account mapRow(ResultSet resultSet, int i) throws SQLException {

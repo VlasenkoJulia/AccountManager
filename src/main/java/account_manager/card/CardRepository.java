@@ -20,23 +20,26 @@ public class CardRepository {
     }
 
     public Card getById(int id) {
-       return jdbcTemplate.query("SELECT * FROM account_cards INNER JOIN card ON account_cards.card_id = card.id WHERE card_id = ?",
-               resultSet -> {
-                   HashSet<Integer> accountId = new HashSet<>();
-                   int cardId;
-                   String number;
-                   if (resultSet.first()) {
-                       cardId = resultSet.getInt("card_id");
-                       number = resultSet.getString("number");
-                       accountId.add(resultSet.getInt("account_id"));
-                   } else {
-                       throw new RuntimeException("Card with passed ID do not exist");
-                   }
-                   while (resultSet.next()) {
-                       accountId.add(resultSet.getInt("account_id"));
-                   }
-                   return new Card(cardId, number, accountId);
-               }, id);
+        return jdbcTemplate.query(
+                "SELECT * FROM account_cards"
+                        + " INNER JOIN card ON account_cards.card_id = card.id"
+                        + " WHERE card_id = ?",
+                resultSet -> {
+                    Set<Integer> accountIds = new HashSet<>();
+                    int cardId;
+                    String number;
+                    if (resultSet.first()) {
+                        cardId = resultSet.getInt("card_id");
+                        number = resultSet.getString("number");
+                        accountIds.add(resultSet.getInt("account_id"));
+                    } else {
+                        throw new RuntimeException("Card with passed ID do not exist");
+                    }
+                    while (resultSet.next()) {
+                        accountIds.add(resultSet.getInt("account_id"));
+                    }
+                    return new Card(cardId, number, accountIds);
+                }, id);
     }
 
     public Set<Card> getByAccountId(int id) {
@@ -49,15 +52,18 @@ public class CardRepository {
     }
 
     public void deleteById(int id) {
-        int rowsAffected = jdbcTemplate.update("DELETE FROM account_cards WHERE card_id = ?", id);
+        jdbcTemplate.update("DELETE FROM account_cards WHERE card_id = ?", id);
+        int rowsAffected = jdbcTemplate.update("DELETE FROM card WHERE id = ?", id);
         if (rowsAffected < 1) {
             throw new RuntimeException("Card with passed ID do not exist");
         }
-        jdbcTemplate.update("DELETE FROM card WHERE id = ?", id);
     }
 
     public void deleteNotActive() {
-        List<Integer> notActiveCardIds = jdbcTemplate.query("SELECT id FROM card WHERE NOT EXISTS (SELECT * FROM account_cards WHERE card.id = account_cards.card_id)",
+        List<Integer> notActiveCardIds = jdbcTemplate.query(
+                "SELECT id FROM card"
+                        + " WHERE NOT EXISTS ("
+                        + "SELECT * FROM account_cards WHERE card.id = account_cards.card_id)",
                 (resultSet, i) -> resultSet.getInt("id"));
         notActiveCardIds.forEach(cardId -> jdbcTemplate.update("DELETE FROM card WHERE id = ?", cardId));
     }

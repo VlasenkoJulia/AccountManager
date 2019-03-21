@@ -39,7 +39,7 @@ public class AccountRepository {
 
     public Account getById(int id) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM account WHERE id = ?", new AccountMapper(), id);
+            return jdbcTemplate.queryForObject("SELECT * FROM account WHERE id = ?", new AccountRowMapper(), id);
         } catch (DataAccessException e) {
             throw new RuntimeException("Account with passed ID do not exist");
         }

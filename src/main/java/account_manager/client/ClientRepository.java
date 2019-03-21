@@ -7,10 +7,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClientRepository {
+class ClientRepository {
     private JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSourceCreator.createDataSource());
 
-    public Client create(Client client) {
+    Client create(Client client) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(DataSourceCreator.createDataSource())
                 .withTableName("client")
                 .usingGeneratedKeyColumns("id");
@@ -19,21 +19,20 @@ public class ClientRepository {
         parameters.put("first_name", client.getFirstName());
         int createdClientId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
         return getById(createdClientId);
-
     }
 
-    public Client getById(int id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM client WHERE id = ?", new ClientMapper(), id);
+    Client getById(int id) {
+        return jdbcTemplate.queryForObject("SELECT * FROM client WHERE id = ?", new ClientRowMapper(), id);
     }
 
-    public void deleteById(int id) {
+    void deleteById(int id) {
         int rowsAffected = jdbcTemplate.update("DELETE FROM client WHERE id = ?", id);
         if (rowsAffected < 1) {
             throw new RuntimeException("Client with passed ID do not exist");
         }
     }
 
-    public Client update(Client client) {
+    Client update(Client client) {
         int rowsAffected = jdbcTemplate.update("UPDATE client SET last_name = ?, first_name = ? WHERE id  = ?",
                 client.getLastName(), client.getFirstName(), client.getId());
         if (rowsAffected < 1) {
@@ -41,7 +40,4 @@ public class ClientRepository {
         }
         return getById(client.getId());
     }
-
-
-
 }
