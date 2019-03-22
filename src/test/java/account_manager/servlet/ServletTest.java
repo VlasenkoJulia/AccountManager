@@ -1,13 +1,17 @@
 package account_manager.servlet;
 
+import account_manager.DataSourceCreator;
 import account_manager.account.Account;
 import account_manager.account.AccountRepository;
 import account_manager.card.Card;
 import account_manager.card.CardRepository;
 import account_manager.currency_converter.ConversionDto;
+import account_manager.currency_converter.Currency;
 import account_manager.currency_converter.CurrencyConverter;
+import account_manager.currency_converter.CurrencyRowMapper;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
 import java.net.URI;
