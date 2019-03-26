@@ -1,10 +1,12 @@
 package account_manager.currency_converter;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
 public class CurrencyRowMapper implements RowMapper<Currency> {
 
     @Override

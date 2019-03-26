@@ -1,25 +1,35 @@
 package account_manager.card;
 
-import account_manager.DataSourceCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
 public class CardRepository {
-    private JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSourceCreator.createDataSource());
 
-    public void create(Card card) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(DataSourceCreator.createDataSource()).withTableName("card").usingGeneratedKeyColumns("id");
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    @Autowired
+    public CardRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = simpleJdbcInsert;
+    }
+
+    void create(Card card) {
+        SimpleJdbcInsert insert = simpleJdbcInsert.withTableName("card").usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("number", card.getNumber());
-        int createdCardId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
+        int createdCardId = insert.executeAndReturnKey(parameters).intValue();
         for (Integer accountId : card.getAccountsId()) {
             jdbcTemplate.update("INSERT INTO account_cards VALUES (?, ?)", accountId, createdCardId);
         }
     }
 
-    public Card getById(int id) {
+    Card getById(int id) {
         return jdbcTemplate.query(
                 "SELECT * FROM account_cards"
                         + " INNER JOIN card ON account_cards.card_id = card.id"
@@ -51,7 +61,7 @@ public class CardRepository {
         return new HashSet<>(cards);
     }
 
-    public void deleteById(int id) {
+    void deleteById(int id) {
         jdbcTemplate.update("DELETE FROM account_cards WHERE card_id = ?", id);
         int rowsAffected = jdbcTemplate.update("DELETE FROM card WHERE id = ?", id);
         if (rowsAffected < 1) {

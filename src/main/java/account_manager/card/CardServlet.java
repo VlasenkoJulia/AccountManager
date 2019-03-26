@@ -1,6 +1,7 @@
 package account_manager.card;
 
 
+import account_manager.AppContext;
 import com.google.gson.Gson;
 
 import javax.servlet.annotation.WebServlet;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @WebServlet("/card")
 public class CardServlet extends HttpServlet {
-   private CardRepository cardRepository = new CardRepository();
+   private CardRepository cardRepository = (CardRepository) AppContext.INSTANCE.getContext().getBean("cardRepository");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

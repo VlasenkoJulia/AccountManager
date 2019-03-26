@@ -1,5 +1,6 @@
 package account_manager.currency_converter;
 
+import account_manager.AppContext;
 import account_manager.account.Account;
 import com.google.gson.Gson;
 
@@ -9,12 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
+
 
 @WebServlet("/converter")
 public class CurrencyConverterServlet extends HttpServlet {
-    private CurrencyConverter currencyConverter = new CurrencyConverter();
+
+    private CurrencyConverter currencyConverter = (CurrencyConverter) AppContext.INSTANCE.getContext().getBean("currencyConverter");
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -24,7 +27,7 @@ public class CurrencyConverterServlet extends HttpServlet {
         if (conversionDto.getSourceAccountId() == null || conversionDto.getTargetAccountId() == null) {
             throw new IllegalStateException("Can not provide conversion operation with passed accounts");
         }
-        Set<Account> accounts = currencyConverter.convert(conversionDto);
+        List<Account> accounts = currencyConverter.convert(conversionDto);
         try (PrintWriter writer = response.getWriter()) {
             writer.println(gson.toJson(accounts));
         }

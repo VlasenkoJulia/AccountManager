@@ -1,5 +1,6 @@
 package account_manager.account;
 
+import account_manager.AppContext;
 import com.google.gson.Gson;
 
 import javax.servlet.annotation.WebServlet;
@@ -13,7 +14,8 @@ import java.util.stream.Collectors;
 
 @WebServlet("/account")
 public class AccountServlet extends HttpServlet {
-    private AccountRepository accountRepository = new AccountRepository();
+
+    private AccountRepository accountRepository = (AccountRepository) AppContext.INSTANCE.getContext().getBean("accountRepository");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

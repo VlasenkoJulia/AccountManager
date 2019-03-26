@@ -1,5 +1,6 @@
 package account_manager.client;
 
+import account_manager.AppContext;
 import com.google.gson.Gson;
 
 import javax.servlet.annotation.WebServlet;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @WebServlet("/client")
 public class ClientServlet extends HttpServlet {
-    private ClientRepository clientRepository = new ClientRepository();
+    private ClientRepository clientRepository = (ClientRepository) AppContext.INSTANCE.getContext().getBean("clientRepository");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

@@ -1,28 +1,38 @@
 package account_manager.client;
 
-import account_manager.DataSourceCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 
-class ClientRepository {
-    private JdbcTemplate jdbcTemplate = new JdbcTemplate(DataSourceCreator.createDataSource());
+@Repository
+public class ClientRepository {
+    private final JdbcTemplate jdbcTemplate;
+    private final ClientRowMapper clientRowMapper;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+    @Autowired
+    public ClientRepository(JdbcTemplate jdbcTemplate, ClientRowMapper clientRowMapper, SimpleJdbcInsert simpleJdbcInsert) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.clientRowMapper = clientRowMapper;
+        this.simpleJdbcInsert = simpleJdbcInsert;
+    }
 
     Client create(Client client) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(DataSourceCreator.createDataSource())
+        SimpleJdbcInsert insert = simpleJdbcInsert
                 .withTableName("client")
                 .usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("last_name", client.getLastName());
         parameters.put("first_name", client.getFirstName());
-        int createdClientId = simpleJdbcInsert.executeAndReturnKey(parameters).intValue();
+        int createdClientId = insert.executeAndReturnKey(parameters).intValue();
         return getById(createdClientId);
     }
 
     Client getById(int id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM client WHERE id = ?", new ClientRowMapper(), id);
+        return jdbcTemplate.queryForObject("SELECT * FROM client WHERE id = ?", clientRowMapper, id);
     }
 
     void deleteById(int id) {

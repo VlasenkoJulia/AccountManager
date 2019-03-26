@@ -2,16 +2,24 @@ package account_manager.currency_converter;
 
 import account_manager.account.Account;
 import account_manager.account.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
+@Component
 public class CurrencyConverter {
-    private AccountRepository accountRepository = new AccountRepository();
-    private CurrencyRepository currencyRepository = new CurrencyRepository();
+    private final AccountRepository accountRepository;
+    private final CurrencyRepository currencyRepository;
 
-    public List<Account> convert(ConversionDto conversionDto) {
+    @Autowired
+    public CurrencyConverter(CurrencyRepository currencyRepository, AccountRepository accountRepository) {
+        this.currencyRepository = currencyRepository;
+        this.accountRepository = accountRepository;
+    }
+
+    List<Account> convert(ConversionDto conversionDto) {
         double amount = conversionDto.getAmount();
         Account sourceAccount = accountRepository.getById(conversionDto.getSourceAccountId());
         Account targetAccount = accountRepository.getById(conversionDto.getTargetAccountId());
