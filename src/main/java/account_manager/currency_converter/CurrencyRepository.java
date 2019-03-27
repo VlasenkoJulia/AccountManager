@@ -16,17 +16,11 @@ public class CurrencyRepository {
         this.currencyRowMapper = currencyRowMapper;
     }
 
-    double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) {
-        Currency sourceCurrency = jdbcTemplate.queryForObject("SELECT * FROM currency WHERE code = ?",
-                currencyRowMapper, sourceCurrencyCode);
-        if (sourceCurrency.getRate() == 0) {
-            throw new RuntimeException("Can not perform exchange rate calculation, invalid rate of one of  the passed currency");
+    Currency getCurrency(String currencyCode) {
+        Currency currency = jdbcTemplate.queryForObject("SELECT * FROM currency WHERE code = ?", currencyRowMapper, currencyCode);
+        if (currency == null || currency.getRate() == 0) {
+            throw new RuntimeException(String.format("Invalid rate of %s currency", currencyCode));
         }
-        Currency targetCurrency = jdbcTemplate.queryForObject("SELECT * FROM currency WHERE code = ?",
-                currencyRowMapper, targetCurrencyCode);
-        if (targetCurrency.getRate() == 0) {
-            throw new RuntimeException("Can not perform exchange rate calculation, invalid rate of one of  the passed currency");
-        }
-        return targetCurrency.getRate() / sourceCurrency.getRate();
+        return currency;
     }
 }

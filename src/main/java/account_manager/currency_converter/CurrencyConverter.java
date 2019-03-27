@@ -25,7 +25,7 @@ public class CurrencyConverter {
         Account targetAccount = accountRepository.getById(conversionDto.getTargetAccountId());
 
         checkBalance(sourceAccount, amount);
-        double exchangeRate = currencyRepository.calculateExchangeRate(sourceAccount.getCurrencyCode(), targetAccount.getCurrencyCode());
+        double exchangeRate = calculateExchangeRate(sourceAccount.getCurrencyCode(), targetAccount.getCurrencyCode());
         sourceAccount.setBalance(sourceAccount.getBalance() - amount);
         targetAccount.setBalance(targetAccount.getBalance() + amount * exchangeRate);
         updateBalance(sourceAccount, targetAccount);
@@ -47,5 +47,11 @@ public class CurrencyConverter {
     private void checkBalance(Account sourceAccount, double amount) {
         if (sourceAccount.getBalance() < amount)
             throw new RuntimeException("Client does not have enough money for this transaction");
+    }
+
+    private double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) {
+        Currency sourceCurrency = currencyRepository.getCurrency(sourceCurrencyCode);
+        Currency targetCurrency = currencyRepository.getCurrency(targetCurrencyCode);
+        return targetCurrency.getRate() / sourceCurrency.getRate();
     }
 }
