@@ -1,16 +1,9 @@
 package account_manager.servlet;
 
-import account_manager.AppContext;
 import account_manager.account.Account;
-import account_manager.account.AccountRepository;
 import account_manager.account.AccountType;
-import account_manager.card.Card;
-import account_manager.card.CardRepository;
 import account_manager.client.Client;
-import account_manager.client.ClientRepository;
 import account_manager.currency_converter.ConversionDto;
-import account_manager.currency_converter.Currency;
-import account_manager.currency_converter.CurrencyRepository;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 
@@ -21,25 +14,22 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Date;
 
-
 class ServletTest {
 
     @Test
-    public void testServletMethods() {
-        AccountRepository accountRepository = (AccountRepository) AppContext.INSTANCE.getContext().getBean("accountRepository");
-        ClientRepository clientRepository = (ClientRepository) AppContext.INSTANCE.getContext().getBean("clientRepository");
-        CardRepository cardRepository = (CardRepository) AppContext.INSTANCE.getContext().getBean("cardRepository");
-        CurrencyRepository currencyRepository = (CurrencyRepository) AppContext.INSTANCE.getContext().getBean("currencyRepository");
-//        ConversionDto conversionDto = new ConversionDto(10, 5, 1000);
+
+    public void testServletMethods() throws IOException, InterruptedException {
+
+        ConversionDto conversionDto = new ConversionDto(11, 15, 250000);
+        Gson gson = new Gson();
+        String json = gson.toJson(conversionDto);
+        sendPost("http://localhost:8080/account-manager-app/converter", json);
+//        Client client = new Client(5,"Brown", "Nick");
 //        Gson gson = new Gson();
-//        String json = gson.toJson(conversionDto);
-//        System.out.println();
-//        sendPost("http://localhost:8080/account-manager-app/converter", json);
-//        Account account = new Account("263512121212121", "643", AccountType.DEPOSIT, 4);
-//        Gson gson = new Gson();
-//       String s = gson.toJson(account);
+//        String s = gson.toJson(client);
 //        accountRepository.create(account);
 //       sendPost("http://localhost:8080/account-manager-app/account",s);
+//        sendPut("http://localhost:8080/account-manager-app/client", s);
     }
 
     public static void sendGet(String urlName, String id) throws IOException, InterruptedException {
@@ -75,7 +65,7 @@ class ServletTest {
     public static void sendDelete(String urlName, String id) throws IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(urlName + "?accountId=" + id))
+                .uri(URI.create(urlName + "?clientId=" + id))
                 .DELETE()
                 .build();
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
