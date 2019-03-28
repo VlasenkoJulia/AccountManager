@@ -17,21 +17,18 @@ public class AccountRepository {
     private final JdbcTemplate jdbcTemplate;
     private final CardRepository cardRepository;
     private final AccountRowMapper accountRowMapper;
-    private final SimpleJdbcInsert simpleJdbcInsert;
 
     @Autowired
     public AccountRepository(JdbcTemplate jdbcTemplate,
                              CardRepository cardRepository,
-                             AccountRowMapper accountRowMapper,
-                             SimpleJdbcInsert simpleJdbcInsert) {
+                             AccountRowMapper accountRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.cardRepository = cardRepository;
         this.accountRowMapper = accountRowMapper;
-        this.simpleJdbcInsert = simpleJdbcInsert;
     }
 
-    public Account create(Account account) {
-        SimpleJdbcInsert insert = simpleJdbcInsert
+    Account create(Account account) {
+        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("account")
                 .usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>();

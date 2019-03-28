@@ -30,9 +30,4 @@ public class DbConfiguration {
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
-
-    @Bean
-    public SimpleJdbcInsert simpleJdbcInsert(DataSource dataSource) {
-        return new SimpleJdbcInsert(dataSource);
-    }
 }

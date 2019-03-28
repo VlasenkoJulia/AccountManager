@@ -12,16 +12,14 @@ import java.util.Map;
 public class ClientRepository {
     private final JdbcTemplate jdbcTemplate;
     private final ClientRowMapper clientRowMapper;
-    private final SimpleJdbcInsert simpleJdbcInsert;
     @Autowired
-    public ClientRepository(JdbcTemplate jdbcTemplate, ClientRowMapper clientRowMapper, SimpleJdbcInsert simpleJdbcInsert) {
+    public ClientRepository(JdbcTemplate jdbcTemplate, ClientRowMapper clientRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.clientRowMapper = clientRowMapper;
-        this.simpleJdbcInsert = simpleJdbcInsert;
     }
 
     Client create(Client client) {
-        SimpleJdbcInsert insert = simpleJdbcInsert
+        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("client")
                 .usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>();

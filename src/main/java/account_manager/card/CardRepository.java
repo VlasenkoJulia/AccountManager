@@ -11,16 +11,16 @@ import java.util.*;
 public class CardRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
 
     @Autowired
-    public CardRepository(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsert) {
+    public CardRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsert = simpleJdbcInsert;
     }
 
     void create(Card card) {
-        SimpleJdbcInsert insert = simpleJdbcInsert.withTableName("card").usingGeneratedKeyColumns("id");
+        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("card")
+                .usingGeneratedKeyColumns("id");
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("number", card.getNumber());
         int createdCardId = insert.executeAndReturnKey(parameters).intValue();
