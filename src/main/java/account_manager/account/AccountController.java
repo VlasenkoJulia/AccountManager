@@ -3,9 +3,13 @@ package account_manager.account;
 
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
-@RestController
+import java.util.List;
+
+@Controller
 @RequestMapping("/account")
 public class AccountController {
     private final AccountRepository accountRepository;
@@ -17,13 +21,20 @@ public class AccountController {
         this.gson = gson;
     }
 
+    @GetMapping("/get-by-client")
+    public ModelAndView getByClientId(@RequestParam("clientId") Integer id) {
+        List<Account> accounts = accountRepository.getByClientId(id);
+        return new ModelAndView("accountsByClient", "accounts", accounts);
+    }
+
     @GetMapping
-    public String getAccountById(@RequestParam("accountId") Integer id) {
+    public ModelAndView getAccountById(@RequestParam("accountId") Integer id) {
         Account account = accountRepository.getById(id);
-        return gson.toJson(account);
+        return new ModelAndView("test", "account", account);
     }
 
     @PostMapping
+    @ResponseBody
     public String createAccount(@RequestBody String body) {
         Account account = gson.fromJson(body, Account.class);
         if (account.getId() != null) {
@@ -34,6 +45,7 @@ public class AccountController {
     }
 
     @PutMapping
+    @ResponseBody
     public String updateAccount(@RequestBody String body) {
         Account account = gson.fromJson(body, Account.class);
         if (account.getId() == null) {
@@ -44,6 +56,7 @@ public class AccountController {
     }
 
     @DeleteMapping
+    @ResponseBody
     public String deleteAccount(@RequestParam("accountId") Integer id) {
         accountRepository.deleteById(id);
         return "Deleted account #" + id;

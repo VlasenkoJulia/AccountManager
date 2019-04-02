@@ -8,9 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class AccountRepository {
@@ -56,6 +54,10 @@ public class AccountRepository {
         } catch (DataAccessException e) {
             throw new RuntimeException("Account with passed ID do not exist");
         }
+    }
+
+    List<Account> getByClientId(int id) {
+        return jdbcTemplate.query("SELECT * FROM account WHERE client_id = ?", accountRowMapper, id);
     }
 
     public void update(Account account) {

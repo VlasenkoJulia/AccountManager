@@ -52,13 +52,12 @@ public class CardRepository {
                 }, id);
     }
 
-    public Set<Card> getByAccountId(int id) {
-        List<Card> cards = jdbcTemplate.query("SELECT * FROM account_cards INNER JOIN card ON account_cards.card_id = card.id WHERE account_id = ?",
+    public List<Card> getByAccountId(int id) {
+       return jdbcTemplate.query("SELECT * FROM account_cards INNER JOIN card ON account_cards.card_id = card.id WHERE account_id = ?",
                 (resultSet, i) -> {
             int cardId = resultSet.getInt("card_id");
             return getById(cardId);
         }, id);
-        return new HashSet<>(cards);
     }
 
     void deleteById(int id) {
