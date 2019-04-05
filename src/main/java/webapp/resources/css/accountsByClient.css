@@ -1,0 +1,86 @@
+#accounts {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#accounts td, #accounts th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#accounts tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#accounts tr:hover {
+    background-color: #ddd;
+}
+
+#accounts th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+#create-account {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#submit {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#submit:hover, #create-account:hover {
+    background-color: #45a049;
+}
+
+div {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    visibility: hidden;
+}
+
+option {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+h2 {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    color: #ddd;
+    border-bottom: 5px solid #ddd;
+}

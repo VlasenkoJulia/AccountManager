@@ -28,9 +28,10 @@ public class AccountController {
     }
 
     @GetMapping
-    public ModelAndView getAccountById(@RequestParam("accountId") Integer id) {
+    @ResponseBody
+    public String getAccountById(@RequestParam("accountId") Integer id) {
         Account account = accountRepository.getById(id);
-        return new ModelAndView("test", "account", account);
+        return gson.toJson(account);
     }
 
     @PostMapping

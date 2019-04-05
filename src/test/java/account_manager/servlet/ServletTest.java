@@ -21,18 +21,6 @@ class ServletTest {
     @Test
 
     public void testServletMethods() throws IOException, InterruptedException {
-//        ConversionDto conversionDto = new ConversionDto(11, 15, 250000);
-//        Gson gson = new Gson();
-//        String json = gson.toJson(conversionDto);
-//        sendPost("http://localhost:8080/account-manager-app/converter", json);
-        HashSet<Integer> set = new HashSet<>();
-        set.add(5);
-        set.add(7);
-        set.add(13);
-        Card card = new Card("1598-5874-3654-1249", set);
-        Gson gson = new Gson();
-        String s = gson.toJson(card);
-        sendPost("http://localhost:8080/account-manager-app/card", s);
     }
 
     public static void sendGet(String urlName, String id) throws IOException, InterruptedException {
