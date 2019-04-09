@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -21,12 +22,13 @@ class ServletTest {
     @Test
 
     public void testServletMethods() throws IOException, InterruptedException {
+     sendGet("http://localhost:8080/account-manager-app/account/get-by-client?clientId=4", "5");
     }
 
     public static void sendGet(String urlName, String id) throws IOException, InterruptedException {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(urlName + "?accountId=" + id))
+                .uri(URI.create(urlName))
                 .GET()
                 .build();
         HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());

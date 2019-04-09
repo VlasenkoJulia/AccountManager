@@ -24,7 +24,7 @@ public class CurrencyConverterController {
     }
 
     @PostMapping
-    public String createClient(@RequestBody String body) {
+    public String convert(@RequestBody String body) {
         ConversionDto conversionDto = gson.fromJson(body, ConversionDto.class);
         if (conversionDto.getSourceAccountId() == null || conversionDto.getTargetAccountId() == null) {
             throw new IllegalStateException("Can not provide conversion operation with passed accounts");

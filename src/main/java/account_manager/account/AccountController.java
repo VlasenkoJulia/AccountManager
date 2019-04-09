@@ -62,6 +62,4 @@ public class AccountController {
         accountRepository.deleteById(id);
         return "Deleted account #" + id;
     }
-
-
 }

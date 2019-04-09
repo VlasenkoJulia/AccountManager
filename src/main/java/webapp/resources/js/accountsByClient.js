@@ -33,7 +33,23 @@ $(document).ready(function () {
     });
 
     $("#create-account").click(function () {
-        $("div").css('visibility', 'visible');
+        $("#create-account-wrapper").css('display', 'block');
+        $(this).attr('disabled', true)
+    });
+
+    $("#create-cancel").click(function () {
+        $("#create-account-wrapper").css('display', 'none');
+        $("#create-account").attr('disabled', false)
+    });
+
+    $("#convert").click(function () {
+        $("#conversion-wrapper").css('display', 'block');
+        $(this).attr('disabled', true)
+    });
+
+    $("#convert-cancel").click(function () {
+        $("#conversion-wrapper").css('display', 'none');
+        $("#convert").attr('disabled', false)
     });
 
     $(".save").click(function () {
@@ -100,8 +116,8 @@ $(document).ready(function () {
         });
     });
 
-    $("#submit").click(function () {
-        let formData = $("#form").find('.data');
+    $("#create-submit").click(function () {
+        let formData = $("#create-account-form").find('.data');
         let account = {};
         $.each(formData, function () {
             let name = $(this).attr("name");
@@ -131,5 +147,36 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("#convert-submit").click(function () {
+        let formData = $("#conversion-form").find('.data');
+        let conversionDto = {};
+        $.each(formData, function () {
+            let name = $(this).attr("name");
+            switch (name) {
+                case "sourceAccountId":
+                    conversionDto.sourceAccountId = $(this).find('option:selected').val();
+                    break;
+                case "targetAccountId":
+                    conversionDto.targetAccountId = $(this).find('option:selected').val();
+                    break;
+                case "amount":
+                    conversionDto.amount = $(this).val();
+                    break;
+            }
+        });
+        let body = JSON.stringify(conversionDto);
+        $.ajax({
+            url: 'http://localhost:8080/account-manager-app/converter',
+            type: "POST",
+            contentType: 'application/json',
+            data: body,
+            success: function () {
+                location.reload();
+            }
+        });
+    });
+
+
 
 });

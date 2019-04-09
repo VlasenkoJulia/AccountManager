@@ -53,13 +53,45 @@
         </tr>
     </c:forEach>
 </table>
-<button id="create-account">Create new account</button>
-<div>
-    <form id="form">
+<div class="wrapper">
+    <button id="create-account">Create new account</button>
+    <button id="convert">Convert money</button>
+</div>
+
+<div id="conversion-wrapper">
+        <form id="conversion-form">
+            <label>Source account</label>
+            <select class="data" name="sourceAccountId">
+                <option value="" hidden disabled selected>Choose account to withdraw money for conversion</option>
+                <c:forEach items="${accounts}" var="account">
+                    <option value="${account.id}">(#${account.id}) ${account.number}; current balance: ${account.balance}(${account.currencyCode})</option>
+                </c:forEach>
+            </select>
+
+            <label>Target account</label>
+            <select class="data" name="targetAccountId">
+                <option value="" hidden disabled selected>Choose account to deposit converted money</option>
+                <c:forEach items="${accounts}" var="account">
+                    <option value="${account.id}">(#${account.id}) ${account.number}; current balance: ${account.balance}(${account.currencyCode})</option>
+                </c:forEach>
+            </select>
+
+            <label>Amount</label>
+            <input class="data" type="number" name="amount" min="0" step=".01">
+            <div class="wrapper">
+                <input id="convert-submit" type="button" value="Convert money">
+                <input id="convert-cancel" type="button" value="Cancel">
+            </div>
+        </form>
+</div>
+
+<div id="create-account-wrapper">
+    <form id="create-account-form">
         <label>Account number</label>
         <input class="data" type="text" name="number">
         <label>Currency code</label>
         <select class="data" name="currencyCode">
+            <option value="" hidden disabled selected>Choose currency</option>
             <option value="643">RUB</option>
             <option value="826">GBP</option>
             <option value="840">USD</option>
@@ -68,11 +100,15 @@
         </select>
         <label>Account type</label>
         <select class="data" name="type">
+            <option value="" hidden disabled selected>Choose account type</option>
             <option value="DEPOSIT">Deposit</option>
             <option value="CURRENT">Current</option>
         </select>
         <input class="data" type="text" name="ownerId" value="${ownerId}" style="display: none;">
-        <input id="submit" type="button" value="Submit">
+        <div class="wrapper">
+            <input id="create-submit" type="button" value="Create account">
+            <input id="create-cancel" type="button" value="Cancel">
+        </div>
     </form>
 </div>
 </body>
