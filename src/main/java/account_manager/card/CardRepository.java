@@ -1,5 +1,6 @@
 package account_manager.card;
 
+import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -17,7 +18,7 @@ public class CardRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    void create(Card card) {
+    public void create(Card card) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("card")
                 .usingGeneratedKeyColumns("id");
@@ -29,7 +30,7 @@ public class CardRepository {
         }
     }
 
-    Card getById(int id) {
+    public Card getById(int id){
         return jdbcTemplate.query(
                 "SELECT * FROM account_cards"
                         + " INNER JOIN card ON account_cards.card_id = card.id"
@@ -43,7 +44,7 @@ public class CardRepository {
                         number = resultSet.getString("number");
                         accountIds.add(resultSet.getInt("account_id"));
                     } else {
-                        throw new RuntimeException("Card with passed ID do not exist");
+                        return null;
                     }
                     while (resultSet.next()) {
                         accountIds.add(resultSet.getInt("account_id"));
@@ -51,20 +52,19 @@ public class CardRepository {
                     return new Card(cardId, number, accountIds);
                 }, id);
     }
-
     public List<Card> getByAccountId(int id) {
-       return jdbcTemplate.query("SELECT * FROM account_cards INNER JOIN card ON account_cards.card_id = card.id WHERE account_id = ?",
+        return jdbcTemplate.query("SELECT * FROM account_cards INNER JOIN card ON account_cards.card_id = card.id WHERE account_id = ?",
                 (resultSet, i) -> {
-            int cardId = resultSet.getInt("card_id");
-            return getById(cardId);
-        }, id);
+                    int cardId = resultSet.getInt("card_id");
+                    return getById(cardId);
+                }, id);
     }
 
-    void deleteById(int id) {
+    public void deleteById(int id) throws InputParameterValidationException {
         jdbcTemplate.update("DELETE FROM account_cards WHERE card_id = ?", id);
         int rowsAffected = jdbcTemplate.update("DELETE FROM card WHERE id = ?", id);
         if (rowsAffected < 1) {
-            throw new RuntimeException("Card with passed ID do not exist");
+            throw new InputParameterValidationException("Card with passed ID do not exist");
         }
     }
 

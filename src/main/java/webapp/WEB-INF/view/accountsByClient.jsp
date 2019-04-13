@@ -1,6 +1,8 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
+<%
+    int i = 1;
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,10 +13,11 @@
     <title>Accounts</title>
 </head>
 <body>
-<h2>Accounts</h2>
+<h2>Accounts of the client: ${client.firstName} ${client.lastName}</h2>
 
 <table id="accounts">
     <tr>
+        <th>#</th>
         <th>Account id</th>
         <th>Number</th>
         <th>Currency code</th>
@@ -28,16 +31,16 @@
         <th></th>
     </tr>
     <c:forEach items="${accounts}" var="account">
-        <c:set var="ownerId" scope="session" value="${account.ownerId}"/>
         <tr>
-            <td id="account_id" class="data" contenteditable="false">${account.id}</td>
-            <td id="number" class="data" contenteditable="false">${account.number}</td>
-            <td id="currency_code" class="data" contenteditable="false">${account.currencyCode}</td>
-            <td id="type" class="data" contenteditable="false">${account.type}</td>
-            <td id="open_date" class="data" contenteditable="false"><fmt:formatDate value="${account.openDate}"
-                                                                                    pattern="dd.MM.yyyy"/></td>
-            <td id="balance" class="data" contenteditable="false">${account.balance}</td>
-            <td id="owner_id" class="data" contenteditable="false">${account.ownerId}</td>
+            <td><%= i++ %>
+            </td>
+            <td class="account_id">${account.id}</td>
+            <td class="number data">${account.number}</td>
+            <td class="currency_code data">${account.currencyCode}</td>
+            <td class="type data">${account.type}</td>
+            <td class="open_date data"><fmt:formatDate value="${account.openDate}" pattern="dd.MM.yyyy"/></td>
+            <td class="balance data">${account.balance}</td>
+            <td class="owner_id data">${account.ownerId}</td>
             <td>
                 <button class="edit"><i class="material-icons">edit</i></button>
             </td>
@@ -59,30 +62,34 @@
 </div>
 
 <div id="conversion-wrapper">
-        <form id="conversion-form">
-            <label>Source account</label>
-            <select class="data" name="sourceAccountId">
-                <option value="" hidden disabled selected>Choose account to withdraw money for conversion</option>
-                <c:forEach items="${accounts}" var="account">
-                    <option value="${account.id}">(#${account.id}) ${account.number}; current balance: ${account.balance}(${account.currencyCode})</option>
-                </c:forEach>
-            </select>
+    <form id="conversion-form">
+        <label>Source account</label>
+        <select name="sourceAccountId">
+            <option value="" hidden disabled selected>Choose account to withdraw money for conversion</option>
+            <c:forEach items="${accounts}" var="account">
+                <option value="${account.id}">(#${account.id}) ${account.number};
+                    current balance: ${account.balance}(${account.currencyCode})
+                </option>
+            </c:forEach>
+        </select>
 
-            <label>Target account</label>
-            <select class="data" name="targetAccountId">
-                <option value="" hidden disabled selected>Choose account to deposit converted money</option>
-                <c:forEach items="${accounts}" var="account">
-                    <option value="${account.id}">(#${account.id}) ${account.number}; current balance: ${account.balance}(${account.currencyCode})</option>
-                </c:forEach>
-            </select>
+        <label>Target account</label>
+        <select name="targetAccountId">
+            <option value="" hidden disabled selected>Choose account to deposit converted money</option>
+            <c:forEach items="${accounts}" var="account">
+                <option value="${account.id}">(#${account.id}) ${account.number};
+                    current balance: ${account.balance}(${account.currencyCode})
+                </option>
+            </c:forEach>
+        </select>
 
-            <label>Amount</label>
-            <input class="data" type="number" name="amount" min="0" step=".01">
-            <div class="wrapper">
-                <input id="convert-submit" type="button" value="Convert money">
-                <input id="convert-cancel" type="button" value="Cancel">
-            </div>
-        </form>
+        <label>Amount</label>
+        <input type="number" name="amount" min="0" step=".01">
+        <div class="wrapper">
+            <input id="convert-submit" type="button" value="Ok">
+            <input id="convert-cancel" type="button" value="Cancel">
+        </div>
+    </form>
 </div>
 
 <div id="create-account-wrapper">
@@ -104,9 +111,9 @@
             <option value="DEPOSIT">Deposit</option>
             <option value="CURRENT">Current</option>
         </select>
-        <input class="data" type="text" name="ownerId" value="${ownerId}" style="display: none;">
+        <input class="data" type="text" name="ownerId" value="${client.id}" style="display: none;">
         <div class="wrapper">
-            <input id="create-submit" type="button" value="Create account">
+            <input id="create-submit" type="button" value="Ok">
             <input id="create-cancel" type="button" value="Cancel">
         </div>
     </form>

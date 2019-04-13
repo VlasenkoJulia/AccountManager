@@ -53,37 +53,19 @@ $(document).ready(function () {
     });
 
     $(".save").click(function () {
-        let currentTD = $(this).closest('tr').find('.data');
-        $.each(currentTD, function () {
+        let editableData = $(this).closest('tr').find('.data');
+        $.each(editableData, function () {
             $(this).attr('contenteditable', false)
         });
+        let row = $(this).closest('tr');
         let account = {};
-        $.each(currentTD, function () {
-            let id = $(this).attr("id");
-            switch (id) {
-                case "account_id":
-                    account.id = $(this).text();
-                    break;
-                case "number":
-                    account.number = $(this).text();
-                    break;
-                case "currency_code":
-                    account.currencyCode = $(this).text();
-                    break;
-                case "type":
-                    account.type = $(this).text();
-                    break;
-                case "open_date":
-                    account.openDate = $(this).text();
-                    break;
-                case "balance":
-                    account.balance = $(this).text();
-                    break;
-                case "owner_id":
-                    account.ownerId = $(this).text();
-                    break;
-            }
-        });
+        account.id = $(row).find(".account_id").text();
+        account.number = $(row).find(".number").text();
+        account.currencyCode = $(row).find(".currency_code").text();
+        account.type = $(row).find(".type").text();
+        account.openDate = $(row).find(".open_date").text();
+        account.balance = $(row).find(".balance").text();
+        account.ownerId = $(row).find(".owner_id").text();
         let body = JSON.stringify(account);
         let buttons = $(this).closest('tr').find("button");
         $.ajax({
@@ -99,43 +81,34 @@ $(document).ready(function () {
                         $(this).attr('disabled', true);
                     }
                 });
+            },
+            error: function (xhr) {
+                let errorDto = JSON.parse(xhr.responseText);
+                alert(errorDto.message);
+                location.reload();
             }
         });
     });
 
     $(".delete").click(function () {
         let row = $(this).closest('tr');
-        let accountId = row.find('#account_id').text();
+        let accountId = $(row).find('.account_id').text();
         $.ajax({
             type: "DELETE",
             url: 'http://localhost:8080/account-manager-app/account?accountId=' + accountId,
-            success: function (response) {
-                row.remove();
-                alert(response);
+            success: function () {
+                location.reload();
             }
         });
     });
 
     $("#create-submit").click(function () {
-        let formData = $("#create-account-form").find('.data');
+        let form = $("#create-account-form");
         let account = {};
-        $.each(formData, function () {
-            let name = $(this).attr("name");
-            switch (name) {
-                case "number":
-                    account.number = $(this).val();
-                    break;
-                case "currencyCode":
-                    account.currencyCode = $(this).find('option:selected').val();
-                    break;
-                case "type":
-                    account.type = $(this).find('option:selected').val();
-                    break;
-                case "ownerId":
-                    account.ownerId = $(this).val();
-                    break;
-            }
-        });
+        account.number = $(form).find("[name=number]").val();
+        account.currencyCode = $(form).find("[name=currencyCode]").find('option:selected').val();
+        account.type = $(form).find("[name=type]").find('option:selected').val();
+        account.ownerId = $(form).find("[name=ownerId]").val();
         let body = JSON.stringify(account);
         $.ajax({
             url: 'http://localhost:8080/account-manager-app/account',
@@ -144,27 +117,21 @@ $(document).ready(function () {
             data: body,
             success: function () {
                 location.reload();
+            },
+            error: function (xhr) {
+                let errorDto = JSON.parse(xhr.responseText);
+                alert(errorDto.message);
+                location.reload();
             }
         });
     });
 
     $("#convert-submit").click(function () {
-        let formData = $("#conversion-form").find('.data');
+        let form = $("#conversion-form");
         let conversionDto = {};
-        $.each(formData, function () {
-            let name = $(this).attr("name");
-            switch (name) {
-                case "sourceAccountId":
-                    conversionDto.sourceAccountId = $(this).find('option:selected').val();
-                    break;
-                case "targetAccountId":
-                    conversionDto.targetAccountId = $(this).find('option:selected').val();
-                    break;
-                case "amount":
-                    conversionDto.amount = $(this).val();
-                    break;
-            }
-        });
+        conversionDto.sourceAccountId = $(form).find("[name=sourceAccountId]").find('option:selected').val();
+        conversionDto.targetAccountId = $(form).find("[name=targetAccountId]").find('option:selected').val();
+        conversionDto.amount = $(form).find("[name=amount]").val();
         let body = JSON.stringify(conversionDto);
         $.ajax({
             url: 'http://localhost:8080/account-manager-app/converter',
@@ -173,10 +140,12 @@ $(document).ready(function () {
             data: body,
             success: function () {
                 location.reload();
+            },
+            error: function (xhr) {
+                let errorDto = JSON.parse(xhr.responseText);
+                alert(errorDto.message);
+                location.reload();
             }
         });
     });
-
-
-
 });

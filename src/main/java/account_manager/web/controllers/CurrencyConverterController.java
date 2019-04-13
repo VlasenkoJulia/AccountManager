@@ -1,7 +1,11 @@
-package account_manager.currency_converter;
+package account_manager.web.controllers;
 
 
 import account_manager.account.Account;
+import account_manager.currency_converter.ConversionDto;
+import account_manager.currency_converter.CurrencyConverter;
+import account_manager.web.exception_handling.CurrencyConversionValidationException;
+import account_manager.web.exception_handling.InputParameterValidationException;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +28,10 @@ public class CurrencyConverterController {
     }
 
     @PostMapping
-    public String convert(@RequestBody String body) {
+    public String convert(@RequestBody String body) throws InputParameterValidationException, CurrencyConversionValidationException {
         ConversionDto conversionDto = gson.fromJson(body, ConversionDto.class);
         if (conversionDto.getSourceAccountId() == null || conversionDto.getTargetAccountId() == null) {
-            throw new IllegalStateException("Can not provide conversion operation with passed accounts");
+            throw new InputParameterValidationException("Can not provide conversion operation with passed accounts");
         }
         List<Account> accounts = currencyConverter.convert(conversionDto);
         return gson.toJson(accounts);

@@ -1,12 +1,16 @@
 package account_manager.servlet;
 
 import account_manager.account.Account;
+import account_manager.account.AccountRepository;
 import account_manager.account.AccountType;
 import account_manager.card.Card;
 import account_manager.client.Client;
 import account_manager.currency_converter.ConversionDto;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -17,12 +21,13 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 
+
 class ServletTest {
 
     @Test
-
     public void testServletMethods() throws IOException, InterruptedException {
-     sendGet("http://localhost:8080/account-manager-app/account/get-by-client?clientId=4", "5");
+      sendGet("http://localhost:8080/account-manager-app/account?accountId=100", "1");
+
     }
 
     public static void sendGet(String urlName, String id) throws IOException, InterruptedException {

@@ -2,6 +2,8 @@ package account_manager.currency_converter;
 
 import account_manager.account.Account;
 import account_manager.account.AccountRepository;
+import account_manager.web.exception_handling.CurrencyConversionValidationException;
+import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +21,17 @@ public class CurrencyConverter {
         this.accountRepository = accountRepository;
     }
 
-    List<Account> convert(ConversionDto conversionDto) {
+    public List<Account> convert(ConversionDto conversionDto)
+            throws InputParameterValidationException, CurrencyConversionValidationException {
         double amount = conversionDto.getAmount();
         Account sourceAccount = accountRepository.getById(conversionDto.getSourceAccountId());
+        if (sourceAccount == null) {
+            throw new InputParameterValidationException("Account with passed ID do not exist");
+        }
         Account targetAccount = accountRepository.getById(conversionDto.getTargetAccountId());
-
+        if (targetAccount == null) {
+            throw new InputParameterValidationException("Account with passed ID do not exist");
+        }
         checkBalance(sourceAccount, amount);
         double exchangeRate = calculateExchangeRate(sourceAccount.getCurrencyCode(), targetAccount.getCurrencyCode());
         sourceAccount.setBalance(sourceAccount.getBalance() - amount);
@@ -39,19 +47,27 @@ public class CurrencyConverter {
         return updatedAccounts;
     }
 
-    private void updateBalance(Account sourceAccount, Account targetAccount) {
+    private void updateBalance(Account sourceAccount, Account targetAccount) throws InputParameterValidationException {
         accountRepository.update(sourceAccount);
         accountRepository.update(targetAccount);
     }
 
-    private void checkBalance(Account sourceAccount, double amount) {
+    private void checkBalance(Account sourceAccount, double amount) throws CurrencyConversionValidationException {
         if (sourceAccount.getBalance() < amount)
-            throw new RuntimeException("Client does not have enough money for this transaction");
+            throw new CurrencyConversionValidationException("Client does not have enough money for this transaction");
     }
 
-    private double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) {
+    private double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) throws InputParameterValidationException {
         Currency sourceCurrency = currencyRepository.getCurrency(sourceCurrencyCode);
+        checkCurrency(sourceCurrency);
         Currency targetCurrency = currencyRepository.getCurrency(targetCurrencyCode);
+        checkCurrency(targetCurrency);
         return targetCurrency.getRate() / sourceCurrency.getRate();
+    }
+
+    private void checkCurrency(Currency currency) throws InputParameterValidationException {
+        if (currency == null || currency.getRate() == 0) {
+            throw new InputParameterValidationException("Invalid currency rate or currency");
+        }
     }
 }

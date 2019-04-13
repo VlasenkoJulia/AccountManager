@@ -1,8 +1,12 @@
 package account_manager.currency_converter;
 
+import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 
 @Repository
@@ -17,10 +21,7 @@ public class CurrencyRepository {
     }
 
     Currency getCurrency(String currencyCode) {
-        Currency currency = jdbcTemplate.queryForObject("SELECT * FROM currency WHERE code = ?", currencyRowMapper, currencyCode);
-        if (currency == null || currency.getRate() == 0) {
-            throw new RuntimeException(String.format("Invalid rate of %s currency", currencyCode));
-        }
-        return currency;
+        List<Currency> currency = jdbcTemplate.query("SELECT * FROM currency WHERE code = ?", currencyRowMapper, currencyCode);
+        return DataAccessUtils.singleResult(currency);
     }
 }
