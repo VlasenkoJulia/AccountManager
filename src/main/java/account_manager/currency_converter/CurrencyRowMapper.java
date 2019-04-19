@@ -14,6 +14,9 @@ public class CurrencyRowMapper implements RowMapper<Currency> {
     public Currency mapRow(ResultSet resultSet, int i) throws SQLException {
         String code = resultSet.getString("code");
         double rate = resultSet.getDouble("rate");
-        return new Currency(code, rate);
+        Currency currency = new Currency();
+        currency.setCode(code);
+        currency.setRate(rate);
+        return currency;
     }
 }

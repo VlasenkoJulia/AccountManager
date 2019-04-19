@@ -5,14 +5,15 @@ public class Client {
     private String lastName;
     private String firstName;
 
-    public Client(int id, String lastName, String firstName) {
+    public void setId(Integer id) {
         this.id = id;
-        this.lastName = lastName;
-        this.firstName = firstName;
     }
 
-    public Client(String lastName, String firstName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 

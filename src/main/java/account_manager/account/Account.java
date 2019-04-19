@@ -1,5 +1,7 @@
 package account_manager.account;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class Account {
@@ -9,24 +11,8 @@ public class Account {
     private int ownerId;
     private Integer id;
     private double balance;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private Date openDate;
-
-    public Account(String number, String currencyCode, AccountType type, int ownerId, Integer id, double balance, Date openDate) {
-        this.number = number;
-        this.currencyCode = currencyCode;
-        this.type = type;
-        this.ownerId = ownerId;
-        this.id = id;
-        this.balance = balance;
-        this.openDate = openDate;
-    }
-
-    public Account(String number, String currencyCode, AccountType type, int ownerId) {
-        this.number = number;
-        this.currencyCode = currencyCode;
-        this.type = type;
-        this.ownerId = ownerId;
-    }
 
     public String getNumber() {
         return number;
@@ -52,11 +38,36 @@ public class Account {
         return balance;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     public Date getOpenDate() {
         return openDate;
     }
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
+
+    public void setType(AccountType type) {
+        this.type = type;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setOpenDate(Date openDate) {
+        this.openDate = openDate;
     }
 }

@@ -1,7 +1,6 @@
 package account_manager.account;
 
 import account_manager.card.CardRepository;
-import account_manager.client.ClientRepository;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
@@ -16,17 +15,14 @@ public class AccountRepository {
     private final JdbcTemplate jdbcTemplate;
     private final CardRepository cardRepository;
     private final AccountRowMapper accountRowMapper;
-    private final ClientRepository clientRepository;
 
     @Autowired
     public AccountRepository(JdbcTemplate jdbcTemplate,
                              CardRepository cardRepository,
-                             AccountRowMapper accountRowMapper,
-                             ClientRepository clientRepository) {
+                             AccountRowMapper accountRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.cardRepository = cardRepository;
         this.accountRowMapper = accountRowMapper;
-        this.clientRepository = clientRepository;
     }
 
     public Account create(Account account) {

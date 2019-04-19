@@ -4,7 +4,6 @@ package account_manager.web.controllers;
 import account_manager.client.Client;
 import account_manager.client.ClientRepository;
 import account_manager.web.exception_handling.InputParameterValidationException;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,26 +11,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/client")
 public class ClientController {
     private final ClientRepository clientRepository;
-    private final Gson gson;
 
     @Autowired
-    public ClientController(ClientRepository clientRepository, Gson gson) {
+    public ClientController(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
-        this.gson = gson;
     }
 
     @GetMapping
-    public String getClientById(@RequestParam("clientId") Integer id) throws InputParameterValidationException {
+    public Client getClientById(@RequestParam("clientId") Integer id) throws InputParameterValidationException {
         Client client = clientRepository.getById(id);
         if (client == null) {
             throw new InputParameterValidationException("Client with passed ID do not exist");
         }
-        return gson.toJson(client);
+        return client;
     }
 
     @PostMapping
-    public String createClient(@RequestBody String body) throws InputParameterValidationException {
-        Client client = gson.fromJson(body, Client.class);
+    public String createClient(@RequestBody Client client) throws InputParameterValidationException {
         if (client.getId() != null) {
             throw new InputParameterValidationException("Can not provide insert operation with passed client");
         }
@@ -40,9 +36,7 @@ public class ClientController {
     }
 
     @PutMapping
-    public String updateClient(@RequestBody String body) throws InputParameterValidationException {
-        Client client = gson.fromJson(body, Client.class);
-
+    public String updateClient(@RequestBody Client client) throws InputParameterValidationException {
         if (client.getId() == null) {
             throw new InputParameterValidationException("Can not provide update operation with passed client");
         }

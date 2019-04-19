@@ -12,9 +12,10 @@ public class ClientRowMapper implements RowMapper<Client> {
     @Nullable
     @Override
     public Client mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Integer id = (Integer) rs.getObject("id");
-        String lastName = rs.getString("last_name");
-        String firstName = rs.getString("first_name");
-        return new Client(id, lastName, firstName);
+        Client client = new Client();
+        client.setId((Integer) rs.getObject("id"));
+        client.setLastName(rs.getString("last_name"));
+        client.setFirstName(rs.getString("first_name"));
+        return client;
     }
 }

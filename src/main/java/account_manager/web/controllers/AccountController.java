@@ -6,7 +6,6 @@ import account_manager.account.AccountRepository;
 import account_manager.client.Client;
 import account_manager.client.ClientRepository;
 import account_manager.web.exception_handling.InputParameterValidationException;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +18,10 @@ import java.util.List;
 public class AccountController {
     private final AccountRepository accountRepository;
     private final ClientRepository clientRepository;
-    private final Gson gson;
 
     @Autowired
-    public AccountController(AccountRepository accountRepository, Gson gson, ClientRepository clientRepository) {
+    public AccountController(AccountRepository accountRepository, ClientRepository clientRepository) {
         this.accountRepository = accountRepository;
-        this.gson = gson;
         this.clientRepository = clientRepository;
     }
 
@@ -43,18 +40,17 @@ public class AccountController {
 
     @GetMapping
     @ResponseBody
-    public String getAccountById(@RequestParam Integer accountId) throws InputParameterValidationException {
+    public Account getAccountById(@RequestParam Integer accountId) throws InputParameterValidationException {
         Account account = accountRepository.getById(accountId);
         if (account == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
-        return gson.toJson(account);
+        return account;
     }
 
     @PostMapping
     @ResponseBody
-    public String createAccount(@RequestBody String body) throws InputParameterValidationException {
-        Account account = gson.fromJson(body, Account.class);
+    public String createAccount(@RequestBody Account account) throws InputParameterValidationException {
         if (account.getId() != null) {
             throw new InputParameterValidationException("Can not provide insert operation with passed account");
         }
@@ -67,12 +63,10 @@ public class AccountController {
 
     @PutMapping
     @ResponseBody
-    public String updateAccount(@RequestBody String body) throws InputParameterValidationException {
-        Account account = gson.fromJson(body, Account.class);
+    public String updateAccount(@RequestBody Account account) throws InputParameterValidationException {
         if (account.getId() == null) {
             throw new InputParameterValidationException("Can not provide update operation with passed account");
         }
-
         accountRepository.update(account);
         return "Account updated successfully";
     }

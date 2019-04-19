@@ -5,12 +5,6 @@ public class ConversionDto {
     private Integer targetAccountId;
     private double amount;
 
-    public ConversionDto(Integer sourceAccountId, Integer targetAccountId, double amount) {
-        this.sourceAccountId = sourceAccountId;
-        this.targetAccountId = targetAccountId;
-        this.amount = amount;
-    }
-
     public Integer getSourceAccountId() {
         return sourceAccountId;
     }
@@ -21,5 +15,17 @@ public class ConversionDto {
 
     public double getAmount() {
         return amount;
+    }
+
+    public void setSourceAccountId(Integer sourceAccountId) {
+        this.sourceAccountId = sourceAccountId;
+    }
+
+    public void setTargetAccountId(Integer targetAccountId) {
+        this.targetAccountId = targetAccountId;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 }

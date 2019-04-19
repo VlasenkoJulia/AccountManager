@@ -71,6 +71,7 @@ $(document).ready(function () {
         $.ajax({
             type: "PUT",
             url: 'http://localhost:8080/account-manager-app/account',
+            contentType: 'application/json',
             data: body,
             success: function () {
                 $.each(buttons, function () {

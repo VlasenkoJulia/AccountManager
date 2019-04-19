@@ -25,7 +25,7 @@ public class CardRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("number", card.getNumber());
         int createdCardId = insert.executeAndReturnKey(parameters).intValue();
-        for (Integer accountId : card.getAccountsId()) {
+        for (Integer accountId : card.getAccountIds()) {
             jdbcTemplate.update("INSERT INTO account_cards VALUES (?, ?)", accountId, createdCardId);
         }
     }
@@ -49,7 +49,11 @@ public class CardRepository {
                     while (resultSet.next()) {
                         accountIds.add(resultSet.getInt("account_id"));
                     }
-                    return new Card(cardId, number, accountIds);
+                    Card card = new Card();
+                    card.setId(cardId);
+                    card.setNumber(number);
+                    card.setAccountIds(accountIds);
+                    return card;
                 }, id);
     }
     public List<Card> getByAccountId(int id) {

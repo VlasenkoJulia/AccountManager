@@ -6,22 +6,7 @@ import java.util.Set;
 public class Card {
     private int id;
     private String number;
-    private Set<Integer> accountsId;
-
-    public Card(String number, Set<Integer> accountsId) {
-        this.number = number;
-        this.accountsId = accountsId;
-    }
-
-    Card(int id, String number, Set<Integer> accountsId) {
-        this.id = id;
-        this.number = number;
-        this.accountsId = accountsId;
-    }
-
-    public Card() {
-
-    }
+    private Set<Integer> accountIds;
 
     public int getId() {
         return id;
@@ -39,18 +24,18 @@ public class Card {
         this.number = number;
     }
 
-    public Set<Integer> getAccountsId() {
-        return accountsId;
+    public Set<Integer> getAccountIds() {
+        return accountIds;
     }
 
-    public void setAccountsId(Set<Integer> accountsId) {
-        this.accountsId = accountsId;
+    public void setAccountIds(Set<Integer> accountIds) {
+        this.accountIds = accountIds;
     }
 
     public void addAccountId(int accountId) {
-        if (accountsId == null) {
-            accountsId = new HashSet<>();
+        if (accountIds == null) {
+            accountIds = new HashSet<>();
         }
-        accountsId.add(accountId);
+        accountIds.add(accountId);
     }
 }

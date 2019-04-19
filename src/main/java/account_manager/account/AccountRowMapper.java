@@ -29,6 +29,15 @@ public class AccountRowMapper implements RowMapper<Account> {
             e.printStackTrace();
         }
         int ownerId = resultSet.getInt("client_id");
-        return new Account(number, currencyCode, type, ownerId, accountId, balance, openDate);
+        Account account = new Account();
+        account.setNumber(number);
+        account.setCurrencyCode(currencyCode);
+        account.setType(type);
+        account.setOwnerId(ownerId);
+        account.setId(accountId);
+        account.setBalance(balance);
+        account.setOpenDate(openDate);
+
+        return account;
     }
 }
