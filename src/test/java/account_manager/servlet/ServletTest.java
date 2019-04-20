@@ -6,7 +6,6 @@ import account_manager.account.AccountType;
 import account_manager.card.Card;
 import account_manager.client.Client;
 import account_manager.currency_converter.ConversionDto;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
