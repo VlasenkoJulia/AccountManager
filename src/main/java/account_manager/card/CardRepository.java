@@ -1,83 +1,59 @@
 package account_manager.card;
 
+import account_manager.account.Account;
+import account_manager.account.AccountRepository;
 import account_manager.web.exception_handling.InputParameterValidationException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Repository
+@Transactional
 public class CardRepository {
-
-    private final JdbcTemplate jdbcTemplate;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public CardRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public CardRepository(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     public void create(Card card) {
-        SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("card")
-                .usingGeneratedKeyColumns("id");
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("number", card.getNumber());
-        int createdCardId = insert.executeAndReturnKey(parameters).intValue();
-        for (Integer accountId : card.getAccountIds()) {
-            jdbcTemplate.update("INSERT INTO account_cards VALUES (?, ?)", accountId, createdCardId);
+        Session session = sessionFactory.getCurrentSession();
+        session.persist(card);
+        for (Account account : card.getAccounts()) {
+            account.getCards().add(card);
         }
     }
 
-    public Card getById(int id){
-        return jdbcTemplate.query(
-                "SELECT * FROM account_cards"
-                        + " INNER JOIN card ON account_cards.card_id = card.id"
-                        + " WHERE card_id = ?",
-                resultSet -> {
-                    Set<Integer> accountIds = new HashSet<>();
-                    int cardId;
-                    String number;
-                    if (resultSet.first()) {
-                        cardId = resultSet.getInt("card_id");
-                        number = resultSet.getString("number");
-                        accountIds.add(resultSet.getInt("account_id"));
-                    } else {
-                        return null;
-                    }
-                    while (resultSet.next()) {
-                        accountIds.add(resultSet.getInt("account_id"));
-                    }
-                    Card card = new Card();
-                    card.setId(cardId);
-                    card.setNumber(number);
-                    card.setAccountIds(accountIds);
-                    return card;
-                }, id);
-    }
-    public List<Card> getByAccountId(int id) {
-        return jdbcTemplate.query("SELECT * FROM account_cards INNER JOIN card ON account_cards.card_id = card.id WHERE account_id = ?",
-                (resultSet, i) -> {
-                    int cardId = resultSet.getInt("card_id");
-                    return getById(cardId);
-                }, id);
+    public Card getById(int id) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Card.class, id);
     }
 
     public void deleteById(int id) throws InputParameterValidationException {
-        jdbcTemplate.update("DELETE FROM account_cards WHERE card_id = ?", id);
-        int rowsAffected = jdbcTemplate.update("DELETE FROM card WHERE id = ?", id);
-        if (rowsAffected < 1) {
+        Session session = sessionFactory.getCurrentSession();
+        Card card = session.get(Card.class, id);
+        if (card == null) {
             throw new InputParameterValidationException("Card with passed ID do not exist");
         }
+        session.delete(card);
+        for (Account account : card.getAccounts()) {
+            account.getCards().remove(card);
+        }
     }
-
-    public void deleteNotActive() {
-        List<Integer> notActiveCardIds = jdbcTemplate.query(
-                "SELECT id FROM card"
-                        + " WHERE NOT EXISTS ("
-                        + "SELECT * FROM account_cards WHERE card.id = account_cards.card_id)",
-                (resultSet, i) -> resultSet.getInt("id"));
-        notActiveCardIds.forEach(cardId -> jdbcTemplate.update("DELETE FROM card WHERE id = ?", cardId));
-    }
+// TODO: 24.05.2019 rework this logic using service
+//    public void deleteNotActive() {
+//        List<Integer> notActiveCardIds = jdbcTemplate.query(
+//                "SELECT id FROM card"
+//                        + " WHERE NOT EXISTS ("
+//                        + "SELECT * FROM account_cards WHERE card.id = account_cards.card_id)",
+//                (resultSet, i) -> resultSet.getInt("id"));
+//        notActiveCardIds.forEach(cardId -> jdbcTemplate.update("DELETE FROM card WHERE id = ?", cardId));
+//    }
 }

@@ -1,27 +1,24 @@
 package account_manager.currency_converter;
 
-import account_manager.web.exception_handling.InputParameterValidationException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository
+@Transactional
 public class CurrencyRepository {
-    private final JdbcTemplate jdbcTemplate;
-    private final CurrencyRowMapper currencyRowMapper;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public CurrencyRepository(JdbcTemplate jdbcTemplate, CurrencyRowMapper currencyRowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.currencyRowMapper = currencyRowMapper;
+    public CurrencyRepository(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     Currency getCurrency(String currencyCode) {
-        List<Currency> currency = jdbcTemplate.query("SELECT * FROM currency WHERE code = ?", currencyRowMapper, currencyCode);
-        return DataAccessUtils.singleResult(currency);
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Currency.class, currencyCode);
     }
 }

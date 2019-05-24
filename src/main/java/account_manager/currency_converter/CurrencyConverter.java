@@ -6,6 +6,7 @@ import account_manager.web.exception_handling.CurrencyConversionValidationExcept
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class CurrencyConverter {
         this.accountRepository = accountRepository;
     }
 
+    @Transactional
     public List<Account> convert(ConversionDto conversionDto)
             throws InputParameterValidationException, CurrencyConversionValidationException {
         double amount = conversionDto.getAmount();
@@ -33,9 +35,10 @@ public class CurrencyConverter {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
         checkBalance(sourceAccount, amount);
-        double exchangeRate = calculateExchangeRate(sourceAccount.getCurrencyCode(), targetAccount.getCurrencyCode());
+        double exchangeRate = calculateExchangeRate(sourceAccount.getCurrency().getCode(), targetAccount.getCurrency().getCode());
         sourceAccount.setBalance(sourceAccount.getBalance() - amount);
-        targetAccount.setBalance(targetAccount.getBalance() + amount * exchangeRate);
+        double amountToAdd = Math.round((amount * exchangeRate) * 100.0) / 100.0;
+        targetAccount.setBalance(targetAccount.getBalance() + amountToAdd);
         updateBalance(sourceAccount, targetAccount);
         return getUpdatedAccounts(sourceAccount.getId(), targetAccount.getId());
     }
@@ -56,6 +59,7 @@ public class CurrencyConverter {
         if (sourceAccount.getBalance() < amount)
             throw new CurrencyConversionValidationException("Client does not have enough money for this transaction");
     }
+
 
     private double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) throws InputParameterValidationException {
         Currency sourceCurrency = currencyRepository.getCurrency(sourceCurrencyCode);

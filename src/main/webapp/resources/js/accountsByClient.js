@@ -59,18 +59,24 @@ $(document).ready(function () {
         });
         let row = $(this).closest('tr');
         let account = {};
+        let owner = {};
+        let currency = {};
+        owner.id = $(row).find(".owner_id").text();
+
+        currency.code = $(row).find(".currency_code").text();
+
         account.id = $(row).find(".account_id").text();
         account.number = $(row).find(".number").text();
-        account.currencyCode = $(row).find(".currency_code").text();
         account.type = $(row).find(".type").text();
         account.openDate = $(row).find(".open_date").text();
         account.balance = $(row).find(".balance").text();
-        account.ownerId = $(row).find(".owner_id").text();
+        account.currency = currency;
+        account.client = owner;
         let body = JSON.stringify(account);
         let buttons = $(this).closest('tr').find("button");
         $.ajax({
             type: "PUT",
-            url: 'http://localhost:8080/account-manager-app/account',
+            url: 'http://localhost:8080/account',
             contentType: 'application/json',
             data: body,
             success: function () {
@@ -82,6 +88,7 @@ $(document).ready(function () {
                         $(this).attr('disabled', true);
                     }
                 });
+                location.reload();
             },
             error: function (xhr) {
                 let errorDto = JSON.parse(xhr.responseText);
@@ -96,7 +103,7 @@ $(document).ready(function () {
         let accountId = $(row).find('.account_id').text();
         $.ajax({
             type: "DELETE",
-            url: 'http://localhost:8080/account-manager-app/account?accountId=' + accountId,
+            url: 'http://localhost:8080/account?accountId=' + accountId,
             success: function () {
                 location.reload();
             }
@@ -106,13 +113,21 @@ $(document).ready(function () {
     $("#create-submit").click(function () {
         let form = $("#create-account-form");
         let account = {};
+        let owner = {};
+        let currency = {};
+        owner.id = $(form).find("[name=ownerId]").val();
+        owner.lastName = $(form).find("[name=last_name]").val();
+        owner.firstName = $(form).find("[name=first_name]").val();
+
+        currency.code = $(form).find("[name=currencyCode]").find('option:selected').val();
+
         account.number = $(form).find("[name=number]").val();
-        account.currencyCode = $(form).find("[name=currencyCode]").find('option:selected').val();
         account.type = $(form).find("[name=type]").find('option:selected').val();
-        account.ownerId = $(form).find("[name=ownerId]").val();
+        account.currency = currency;
+        account.client = owner;
         let body = JSON.stringify(account);
         $.ajax({
-            url: 'http://localhost:8080/account-manager-app/account',
+            url: 'http://localhost:8080/account',
             type: "POST",
             contentType: 'application/json',
             data: body,
@@ -135,7 +150,7 @@ $(document).ready(function () {
         conversionDto.amount = $(form).find("[name=amount]").val();
         let body = JSON.stringify(conversionDto);
         $.ajax({
-            url: 'http://localhost:8080/account-manager-app/converter',
+            url: 'http://localhost:8080/converter',
             type: "POST",
             contentType: 'application/json',
             data: body,

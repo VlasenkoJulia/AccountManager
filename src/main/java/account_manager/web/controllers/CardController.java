@@ -29,7 +29,7 @@ public class CardController {
 
     @PostMapping
     public String createCard(@RequestBody Card card) throws InputParameterValidationException {
-        if (card.getAccountIds().isEmpty()) {
+        if (card.getAccounts().isEmpty()) {
             throw new InputParameterValidationException("Card can not be created without reference to the account(s)");
         }
         cardRepository.create(card);

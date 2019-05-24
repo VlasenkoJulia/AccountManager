@@ -6,6 +6,7 @@ import account_manager.account.AccountType;
 import account_manager.card.Card;
 import account_manager.client.Client;
 import account_manager.currency_converter.ConversionDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,14 +20,16 @@ import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 
 class ServletTest {
 
     @Test
-    public void testServletMethods() throws IOException, InterruptedException {
-      sendGet("http://localhost:8080/account-manager-app/account?accountId=100", "1");
-
+    public void testServletMethods() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        AccountType current = AccountType.valueOf("CURRENT");
+        System.out.println(current);
     }
 
     public static void sendGet(String urlName, String id) throws IOException, InterruptedException {

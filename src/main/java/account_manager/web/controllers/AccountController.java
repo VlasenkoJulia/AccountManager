@@ -54,7 +54,7 @@ public class AccountController {
         if (account.getId() != null) {
             throw new InputParameterValidationException("Can not provide insert operation with passed account");
         }
-        if (account.getType() == null || account.getCurrencyCode().equals("")) {
+        if (account.getType() == null || account.getCurrency().getCode().equals("")) {
             throw new InputParameterValidationException("Missed account type and/or currency");
         }
         Account openAccount = accountRepository.create(account);
