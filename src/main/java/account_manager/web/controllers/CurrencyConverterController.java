@@ -25,10 +25,10 @@ public class CurrencyConverterController {
     }
 
     @PostMapping
-    public List<Account> convert(@RequestBody ConversionDto conversionDto) throws InputParameterValidationException, CurrencyConversionValidationException {
+    public void convert(@RequestBody ConversionDto conversionDto) {
         if (conversionDto.getSourceAccountId() == null || conversionDto.getTargetAccountId() == null) {
             throw new InputParameterValidationException("Can not provide conversion operation with passed accounts");
         }
-        return currencyConverter.convert(conversionDto);
+        currencyConverter.convert(conversionDto);
     }
 }

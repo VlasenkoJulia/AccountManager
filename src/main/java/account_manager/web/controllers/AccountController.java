@@ -26,7 +26,7 @@ public class AccountController {
     }
 
     @GetMapping("/get-by-client")
-    public ModelAndView getByClientId(@RequestParam Integer clientId) throws InputParameterValidationException {
+    public ModelAndView getByClientId(@RequestParam Integer clientId) {
         Client client = clientRepository.getById(clientId);
         if (client == null) {
             throw new InputParameterValidationException("Client with passed ID do not exist");
@@ -40,7 +40,7 @@ public class AccountController {
 
     @GetMapping
     @ResponseBody
-    public Account getAccountById(@RequestParam Integer accountId) throws InputParameterValidationException {
+    public Account getAccountById(@RequestParam Integer accountId){
         Account account = accountRepository.getById(accountId);
         if (account == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
@@ -50,7 +50,7 @@ public class AccountController {
 
     @PostMapping
     @ResponseBody
-    public String createAccount(@RequestBody Account account) throws InputParameterValidationException {
+    public String createAccount(@RequestBody Account account) {
         if (account.getId() != null) {
             throw new InputParameterValidationException("Can not provide insert operation with passed account");
         }
@@ -63,7 +63,7 @@ public class AccountController {
 
     @PutMapping
     @ResponseBody
-    public String updateAccount(@RequestBody Account account) throws InputParameterValidationException {
+    public String updateAccount(@RequestBody Account account){
         if (account.getId() == null) {
             throw new InputParameterValidationException("Can not provide update operation with passed account");
         }
@@ -73,7 +73,7 @@ public class AccountController {
 
     @DeleteMapping
     @ResponseBody
-    public String deleteAccount(@RequestParam Integer accountId) throws InputParameterValidationException {
+    public String deleteAccount(@RequestParam Integer accountId) {
         accountRepository.deleteById(accountId);
         return "Deleted account #" + accountId;
     }

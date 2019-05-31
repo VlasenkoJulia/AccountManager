@@ -19,12 +19,12 @@ import java.util.*;
 @Repository
 @Transactional
 public class AccountRepository {
-    private final CardRepository cardRepository;
+    //    private final CardRepository cardRepository;
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public AccountRepository(CardRepository cardRepository, SessionFactory sessionFactory) {
-        this.cardRepository = cardRepository;
+    public AccountRepository(/*CardRepository cardRepository, */SessionFactory sessionFactory) {
+//        this.cardRepository = cardRepository;
         this.sessionFactory = sessionFactory;
     }
 
@@ -35,7 +35,7 @@ public class AccountRepository {
         return account;
     }
 
-    public void deleteById(int id) throws InputParameterValidationException {
+    public void deleteById(int id) {
         Session session = sessionFactory.getCurrentSession();
         Account account = session.get(Account.class, id);
         if (account == null) {
@@ -88,7 +88,7 @@ public class AccountRepository {
     }
 
     @Transactional
-    public void update(Account account) throws InputParameterValidationException {
+    public void update(Account account) {
         Session session = sessionFactory.getCurrentSession();
         if (session.get(Account.class, account.getId()) == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");

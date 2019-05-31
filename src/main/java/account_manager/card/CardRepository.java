@@ -36,7 +36,7 @@ public class CardRepository {
         return session.get(Card.class, id);
     }
 
-    public void deleteById(int id) throws InputParameterValidationException {
+    public void deleteById(int id){
         Session session = sessionFactory.getCurrentSession();
         Card card = session.get(Card.class, id);
         if (card == null) {

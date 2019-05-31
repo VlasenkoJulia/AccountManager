@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class CurrencyConverter {
     private final AccountRepository accountRepository;
@@ -23,14 +20,29 @@ public class CurrencyConverter {
     }
 
     @Transactional
-    public List<Account> convert(ConversionDto conversionDto)
-            throws InputParameterValidationException, CurrencyConversionValidationException {
+    public void convert(ConversionDto conversionDto) {
+
         double amount = conversionDto.getAmount();
-        Account sourceAccount = accountRepository.getById(conversionDto.getSourceAccountId());
+        if (amount < 0) {
+            throw new InputParameterValidationException("Passed amount less than 0");
+        }
+
+        Integer sourceAccountId = conversionDto.getSourceAccountId();
+        if (sourceAccountId == null || sourceAccountId <= 0) {
+            throw new InputParameterValidationException("Passed source account ID can not be null or less/equal 0");
+        }
+
+        Account sourceAccount = accountRepository.getById(sourceAccountId);
         if (sourceAccount == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
-        Account targetAccount = accountRepository.getById(conversionDto.getTargetAccountId());
+
+        Integer targetAccountId = conversionDto.getTargetAccountId();
+        if (targetAccountId == null || targetAccountId <= 0) {
+            throw new InputParameterValidationException("Passed target account ID can not be null or less/equal 0");
+        }
+
+        Account targetAccount = accountRepository.getById(targetAccountId);
         if (targetAccount == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
@@ -40,28 +52,19 @@ public class CurrencyConverter {
         double amountToAdd = Math.round((amount * exchangeRate) * 100.0) / 100.0;
         targetAccount.setBalance(targetAccount.getBalance() + amountToAdd);
         updateBalance(sourceAccount, targetAccount);
-        return getUpdatedAccounts(sourceAccount.getId(), targetAccount.getId());
     }
 
-    private List<Account> getUpdatedAccounts(int sourceAccountId, int targetAccountId) {
-        List<Account> updatedAccounts = new ArrayList<>();
-        updatedAccounts.add(accountRepository.getById(sourceAccountId));
-        updatedAccounts.add(accountRepository.getById(targetAccountId));
-        return updatedAccounts;
-    }
-
-    private void updateBalance(Account sourceAccount, Account targetAccount) throws InputParameterValidationException {
+    private void updateBalance(Account sourceAccount, Account targetAccount) {
         accountRepository.update(sourceAccount);
         accountRepository.update(targetAccount);
     }
 
-    private void checkBalance(Account sourceAccount, double amount) throws CurrencyConversionValidationException {
+    private void checkBalance(Account sourceAccount, double amount) {
         if (sourceAccount.getBalance() < amount)
             throw new CurrencyConversionValidationException("Client does not have enough money for this transaction");
     }
 
-
-    private double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) throws InputParameterValidationException {
+    private double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) {
         Currency sourceCurrency = currencyRepository.getCurrency(sourceCurrencyCode);
         checkCurrency(sourceCurrency);
         Currency targetCurrency = currencyRepository.getCurrency(targetCurrencyCode);
@@ -69,8 +72,8 @@ public class CurrencyConverter {
         return targetCurrency.getRate() / sourceCurrency.getRate();
     }
 
-    private void checkCurrency(Currency currency) throws InputParameterValidationException {
-        if (currency == null || currency.getRate() == 0) {
+    private void checkCurrency(Currency currency) {
+        if (currency == null || currency.getRate() <= 0) {
             throw new InputParameterValidationException("Invalid currency rate or currency");
         }
     }

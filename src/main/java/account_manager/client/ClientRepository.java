@@ -28,7 +28,7 @@ public class ClientRepository {
         return session.get(Client.class, id);
     }
 
-    public void deleteById(int id) throws InputParameterValidationException {
+    public void deleteById(int id) {
         Session session = sessionFactory.getCurrentSession();
         Client client = session.get(Client.class, id);
         if (client == null) {
@@ -37,7 +37,7 @@ public class ClientRepository {
         session.delete(client);
     }
 
-    public Client update(Client client) throws InputParameterValidationException {
+    public Client update(Client client) {
         Session session = sessionFactory.getCurrentSession();
         if (session.get(Client.class, client.getId()) == null) {
             throw new InputParameterValidationException("Client with passed ID do not exist");

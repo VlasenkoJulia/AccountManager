@@ -28,4 +28,13 @@ public class ConversionDto {
     public void setAmount(double amount) {
         this.amount = amount;
     }
+
+    public ConversionDto(Integer sourceAccountId, Integer targetAccountId, double amount) {
+        this.sourceAccountId = sourceAccountId;
+        this.targetAccountId = targetAccountId;
+        this.amount = amount;
+    }
+
+    public ConversionDto() {
+    }
 }

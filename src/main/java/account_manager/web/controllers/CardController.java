@@ -19,7 +19,7 @@ public class CardController {
     }
 
     @GetMapping
-    public Card getCardById(@RequestParam Integer cardId) throws InputParameterValidationException {
+    public Card getCardById(@RequestParam Integer cardId) {
         Card card = cardRepository.getById(cardId);
         if (card == null) {
             throw new InputParameterValidationException("Card with passed ID do not exist");
@@ -28,7 +28,7 @@ public class CardController {
     }
 
     @PostMapping
-    public String createCard(@RequestBody Card card) throws InputParameterValidationException {
+    public String createCard(@RequestBody Card card) {
         if (card.getAccounts().isEmpty()) {
             throw new InputParameterValidationException("Card can not be created without reference to the account(s)");
         }
@@ -37,7 +37,7 @@ public class CardController {
     }
 
     @DeleteMapping
-    public String deleteCard(@RequestParam("cardId") Integer id) throws InputParameterValidationException {
+    public String deleteCard(@RequestParam("cardId") Integer id) {
         cardRepository.deleteById(id);
         return "Deleted card #" + id;
     }
