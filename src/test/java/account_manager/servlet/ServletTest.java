@@ -7,7 +7,6 @@ import account_manager.card.Card;
 import account_manager.client.Client;
 import account_manager.currency_converter.ConversionDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,7 @@ import java.util.List;
 
 class ServletTest {
 
-    @Test
+//    @Test
     public void testServletMethods() {
         ObjectMapper objectMapper = new ObjectMapper();
         AccountType current = AccountType.valueOf("CURRENT");

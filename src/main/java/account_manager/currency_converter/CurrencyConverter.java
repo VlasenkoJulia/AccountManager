@@ -21,28 +21,12 @@ public class CurrencyConverter {
 
     @Transactional
     public void convert(ConversionDto conversionDto) {
-
         double amount = conversionDto.getAmount();
-        if (amount < 0) {
-            throw new InputParameterValidationException("Passed amount less than 0");
-        }
-
-        Integer sourceAccountId = conversionDto.getSourceAccountId();
-        if (sourceAccountId == null || sourceAccountId <= 0) {
-            throw new InputParameterValidationException("Passed source account ID can not be null or less/equal 0");
-        }
-
-        Account sourceAccount = accountRepository.getById(sourceAccountId);
+        Account sourceAccount = accountRepository.getById(conversionDto.getSourceAccountId());
         if (sourceAccount == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
-
-        Integer targetAccountId = conversionDto.getTargetAccountId();
-        if (targetAccountId == null || targetAccountId <= 0) {
-            throw new InputParameterValidationException("Passed target account ID can not be null or less/equal 0");
-        }
-
-        Account targetAccount = accountRepository.getById(targetAccountId);
+        Account targetAccount = accountRepository.getById(conversionDto.getTargetAccountId());
         if (targetAccount == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }

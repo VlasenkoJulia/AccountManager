@@ -108,7 +108,7 @@
             <version>20180813</version>
         </dependency>
 
-        <dependency>
+  <!--      <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.5.0-M1</version>
@@ -136,7 +136,7 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-commons</artifactId>
             <version>1.5.0-M1</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>javax.servlet.jsp-api</artifactId>
@@ -191,7 +191,12 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>2.2.0</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

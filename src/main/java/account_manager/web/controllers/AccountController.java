@@ -54,8 +54,12 @@ public class AccountController {
         if (account.getId() != null) {
             throw new InputParameterValidationException("Can not provide insert operation with passed account");
         }
-        if (account.getType() == null || account.getCurrency().getCode().equals("")) {
-            throw new InputParameterValidationException("Missed account type and/or currency");
+        if (account.getCurrency() == null || account.getCurrency().getCode().equals("")) {
+            throw new InputParameterValidationException("Missed account currency");
+        }
+
+        if (account.getType() == null) {
+            throw new InputParameterValidationException("Missed account type");
         }
         Account openAccount = accountRepository.create(account);
         return "Created account #" + openAccount.getId();
@@ -63,7 +67,7 @@ public class AccountController {
 
     @PutMapping
     @ResponseBody
-    public String updateAccount(@RequestBody Account account){
+    public String updateAccount(@RequestBody Account account) {
         if (account.getId() == null) {
             throw new InputParameterValidationException("Can not provide update operation with passed account");
         }

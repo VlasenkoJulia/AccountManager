@@ -18,8 +18,9 @@ public class ClientController {
     }
 
     @GetMapping
-    public Client getClientById(@RequestParam("clientId") Integer id) {
-        Client client = clientRepository.getById(id);
+    @ResponseBody
+    public Client getClientById(@RequestParam Integer clientId) {
+        Client client = clientRepository.getById(clientId);
         if (client == null) {
             throw new InputParameterValidationException("Client with passed ID do not exist");
         }
@@ -27,6 +28,7 @@ public class ClientController {
     }
 
     @PostMapping
+    @ResponseBody
     public String createClient(@RequestBody Client client){
         if (client.getId() != null) {
             throw new InputParameterValidationException("Can not provide insert operation with passed client");
@@ -36,6 +38,7 @@ public class ClientController {
     }
 
     @PutMapping
+    @ResponseBody
     public String updateClient(@RequestBody Client client){
         if (client.getId() == null) {
             throw new InputParameterValidationException("Can not provide update operation with passed client");
@@ -45,8 +48,9 @@ public class ClientController {
     }
 
     @DeleteMapping
-    public String deleteClient(@RequestParam("clientId") Integer id) {
-        clientRepository.deleteById(id);
-        return "Deleted client #" + id;
+    @ResponseBody
+    public String deleteClient(@RequestParam Integer clientId) {
+        clientRepository.deleteById(clientId);
+        return "Deleted client #" + clientId;
     }
 }

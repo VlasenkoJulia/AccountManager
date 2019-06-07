@@ -19,16 +19,16 @@ public class Card {
     public Card() {
     }
 
-    public Card(int id, String number) {
+    public Card(Integer id, String number) {
         this.id = id;
         this.number = number;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

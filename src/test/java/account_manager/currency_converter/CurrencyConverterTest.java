@@ -20,7 +20,6 @@ public class CurrencyConverterTest {
     private final static int VALID_SOURCE_ID = 1;
     private final static int VALID_TARGET_ID = 2;
     private final static double VALID_AMOUNT = 1000.0;
-    private final static double INVALID_AMOUNT = -1000.0;
 
     @Mock
     AccountRepository accountRepository;
@@ -36,30 +35,6 @@ public class CurrencyConverterTest {
         when(accountRepository.getById(VALID_TARGET_ID)).thenReturn(createAccount(VALID_TARGET_ID, 2000.0, "978", 0.88));
         when(currencyRepository.getCurrency("980")).thenReturn(createCurrency("980", 27.15));
         when(currencyRepository.getCurrency("978")).thenReturn(createCurrency("978", 0.88));
-    }
-
-    @Test(expected = InputParameterValidationException.class)
-    public void shouldThrowExceptionIfAmountIsInvalid() {
-        ConversionDto conversionDto = new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, INVALID_AMOUNT);
-        currencyConverter.convert(conversionDto);
-    }
-
-    private static Object[] getInvalidAccountId() {
-        return new Integer[][]{{null}, {-5}};
-    }
-
-    @Test(expected = InputParameterValidationException.class)
-    @Parameters(method = "getInvalidAccountId")
-    public void shouldThrowExceptionIfSourceAccountIdIsInvalid(Integer invalidAccountId) {
-        ConversionDto conversionDto = new ConversionDto(invalidAccountId, VALID_TARGET_ID, VALID_AMOUNT);
-        currencyConverter.convert(conversionDto);
-    }
-
-    @Test(expected = InputParameterValidationException.class)
-    @Parameters(method = "getInvalidAccountId")
-    public void shouldThrowExceptionIfTargetAccountIdIsInvalid(Integer invalidAccountId) {
-        ConversionDto conversionDto = new ConversionDto(VALID_SOURCE_ID, invalidAccountId, VALID_AMOUNT);
-        currencyConverter.convert(conversionDto);
     }
 
     @Test(expected = InputParameterValidationException.class)
