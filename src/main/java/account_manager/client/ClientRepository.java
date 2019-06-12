@@ -37,13 +37,12 @@ public class ClientRepository {
         session.delete(client);
     }
 
-    public Client update(Client client) {
+    public void update(Client client) {
         Session session = sessionFactory.getCurrentSession();
         if (session.get(Client.class, client.getId()) == null) {
             throw new InputParameterValidationException("Client with passed ID do not exist");
         }
         session.evict(client);
         session.merge(client);
-        return client;
     }
 }

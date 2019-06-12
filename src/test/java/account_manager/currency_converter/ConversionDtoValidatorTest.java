@@ -39,4 +39,10 @@ public class ConversionDtoValidatorTest {
         ConversionDto conversionDto = new ConversionDto(1, invalidId, 1.0);
         validator.validate(conversionDto);
     }
+
+    @Test
+    public void validateValidConversionDto() {
+        ConversionDto conversionDto = new ConversionDto(1, 2, 1.0);
+        validator.validate(conversionDto);
+    }
 }

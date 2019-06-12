@@ -2,83 +2,56 @@ package account_manager.web.controllers;
 
 
 import account_manager.account.Account;
-import account_manager.account.AccountRepository;
+import account_manager.account.AccountService;
 import account_manager.client.Client;
-import account_manager.client.ClientRepository;
-import account_manager.web.exception_handling.InputParameterValidationException;
+import account_manager.client.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/account")
 public class AccountController {
-    private final AccountRepository accountRepository;
-    private final ClientRepository clientRepository;
+    private final AccountService accountService;
+    private final ClientService clientService;
 
     @Autowired
-    public AccountController(AccountRepository accountRepository, ClientRepository clientRepository) {
-        this.accountRepository = accountRepository;
-        this.clientRepository = clientRepository;
+    public AccountController(AccountService accountService, ClientService clientService) {
+        this.accountService = accountService;
+        this.clientService = clientService;
     }
 
     @GetMapping("/get-by-client")
     public ModelAndView getByClientId(@RequestParam Integer clientId) {
-        Client client = clientRepository.getById(clientId);
-        if (client == null) {
-            throw new InputParameterValidationException("Client with passed ID do not exist");
-        }
-        List<Account> accounts = accountRepository.getByClientId(clientId);
+        Client client = clientService.getById(clientId);
         ModelAndView modelAndView = new ModelAndView("accountsByClient");
         modelAndView.addObject("client", client);
-        modelAndView.addObject("accounts", accounts);
+        modelAndView.addObject("accounts", accountService.getByClientId(clientId));
         return modelAndView;
     }
 
     @GetMapping
     @ResponseBody
-    public Account getAccountById(@RequestParam Integer accountId){
-        Account account = accountRepository.getById(accountId);
-        if (account == null) {
-            throw new InputParameterValidationException("Account with passed ID do not exist");
-        }
-        return account;
+    public Account getAccountById(@RequestParam Integer accountId) {
+        return accountService.getById(accountId);
     }
 
     @PostMapping
     @ResponseBody
     public String createAccount(@RequestBody Account account) {
-        if (account.getId() != null) {
-            throw new InputParameterValidationException("Can not provide insert operation with passed account");
-        }
-        if (account.getCurrency() == null || account.getCurrency().getCode().equals("")) {
-            throw new InputParameterValidationException("Missed account currency");
-        }
-
-        if (account.getType() == null) {
-            throw new InputParameterValidationException("Missed account type");
-        }
-        Account openAccount = accountRepository.create(account);
-        return "Created account #" + openAccount.getId();
+        return accountService.create(account);
     }
 
     @PutMapping
     @ResponseBody
     public String updateAccount(@RequestBody Account account) {
-        if (account.getId() == null) {
-            throw new InputParameterValidationException("Can not provide update operation with passed account");
-        }
-        accountRepository.update(account);
-        return "Account updated successfully";
+        return accountService.update(account);
     }
 
     @DeleteMapping
     @ResponseBody
     public String deleteAccount(@RequestParam Integer accountId) {
-        accountRepository.deleteById(accountId);
-        return "Deleted account #" + accountId;
+        return accountService.delete(accountId);
     }
 }

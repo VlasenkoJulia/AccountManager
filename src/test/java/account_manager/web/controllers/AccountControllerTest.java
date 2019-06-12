@@ -2,24 +2,22 @@ package account_manager.web.controllers;
 
 import account_manager.WebConfiguration;
 import account_manager.account.Account;
-import account_manager.account.AccountRepository;
+import account_manager.account.AccountService;
 import account_manager.account.AccountType;
 import account_manager.client.Client;
-import account_manager.client.ClientRepository;
+import account_manager.client.ClientService;
 import account_manager.currency_converter.Currency;
 import account_manager.web.exception_handling.CustomExceptionHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -28,8 +26,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContext;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -43,161 +41,147 @@ public class AccountControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountService accountService;
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
     @Autowired
     private WebApplicationContext webAppContext;
 
     @Before
     public void setup() {
-        reset(clientRepository);
-        reset(accountRepository);
+        reset(accountService);
+        reset(clientService);
         mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
     }
 
-    @Test
-    public void checkIfAccountControllerExistsInWac() {
-        ServletContext servletContext = webAppContext.getServletContext();
-        Assert.assertNotNull(servletContext);
-        Assert.assertTrue(servletContext instanceof MockServletContext);
-        Assert.assertNotNull(webAppContext.getBean("accountController"));
-    }
+    private final String EXCEPTION_MESSAGE = "Exception message";
+    private final String ERROR_DTO_JSON = "{\n"
+            + "  \"message\": \"Exception message\",\n"
+            + "  \"type\": \"INVALID\"\n"
+            + "}";
+
+    private Client client = new Client(1, "John", "Doe");
+    private Currency currency = new Currency("840", 1.0, "US Dollar", "USD");
+    private Account accountWithNotNullId = new Account(1, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
+    private final String ACCOUNT_WITH_NOT_NULL_ID_JSON = "{\n"
+            + "  \"id\": 1,\n"
+            + "  \"number\": \"111\",\n"
+            + "  \"currency\": {\n"
+            + "    \"code\": \"840\",\n"
+            + "    \"rate\": 1.0,\n"
+            + "    \"name\": \"US Dollar\",\n"
+            + "    \"iso\": \"USD\"\n"
+            + "  },\n"
+            + "  \"type\": \"CURRENT\",\n"
+            + "  \"balance\": 1.0,\n"
+            + "  \"openDate\": \"01.01.1970\",\n"
+            + "  \"client\": {\n"
+            + "    \"id\": 1,\n"
+            + "    \"lastName\": \"John\",\n"
+            + "    \"firstName\": \"Doe\"\n"
+            + "  },\n"
+            + "  \"cards\": []\n"
+            + "}";
+
+    private Account accountWithNullId = new Account(null, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
+    private final String ACCOUNT_WITH_NULL_ID_JSON = "{\n"
+            + "  \"id\": null,\n"
+            + "  \"number\": \"111\",\n"
+            + "  \"currency\": {\n"
+            + "    \"code\": \"980\",\n"
+            + "    \"rate\": 1.0,\n"
+            + "    \"name\": \"US Dollar\",\n"
+            + "    \"iso\": \"USD\"\n"
+            + "  },\n"
+            + "  \"type\": \"CURRENT\",\n"
+            + "  \"balance\": 1.0,\n"
+            + "  \"openDate\": \"01.01.1970\",\n"
+            + "  \"client\": {\n"
+            + "    \"id\": 1,\n"
+            + "    \"lastName\": \"John\",\n"
+            + "    \"firstName\": \"Doe\"\n"
+            + "  },\n"
+            + "  \"cards\": []\n"
+            + "}";
 
     @Test
     public void getAccountById_AccountFound_ShouldReturnFoundAccount() throws Exception {
-        when(accountRepository.getById(1)).thenReturn(new Account());
+        when(accountService.getById(1)).thenReturn(accountWithNotNullId);
         mockMvc.perform(get("/account?accountId=1"))
-                .andExpect(status().isOk());
-        verify(accountRepository, times(1)).getById(1);
-        verifyNoMoreInteractions(accountRepository);
+                .andExpect(status().isOk())
+                .andExpect(content().json(ACCOUNT_WITH_NOT_NULL_ID_JSON));
     }
 
     @Test
     public void getAccountById_AccountNotFound_ShouldReturnErrorDto() throws Exception {
-        when(accountRepository.getById(1)).thenReturn(null);
+        when(accountService.getById(1)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/account?accountId=1"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message")
-                        .value("Account with passed ID do not exist"))
-                .andExpect(jsonPath("$.type")
-                        .value("INVALID"));
-        verify(accountRepository, times(1)).getById(1);
-        verifyNoMoreInteractions(accountRepository);
+                .andExpect(content().json(ERROR_DTO_JSON));
     }
 
     @Test
-    public void createAccount_AccountIdIsNotNull_ShouldReturnErrorDto() throws Exception {
-        Account account = createAccount(1);
+    public void createAccount_InvalidAccount_ShouldReturnErrorDto() throws Exception {
+        when(accountService.create(accountWithNotNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(post("/account")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(account)))
+                .content(ACCOUNT_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message")
-                        .value("Can not provide insert operation with passed account"))
-                .andExpect(jsonPath("$.type")
-                        .value("INVALID"));
-    }
-
-    @Test
-    public void createAccount_AccountCurrencyIsNull_ShouldReturnErrorDto() throws Exception {
-        Account account = new Account();
-        mockMvc.perform(post("/account")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(account)))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message").value("Missed account currency"))
-                .andExpect(jsonPath("$.type").value("INVALID"));
-    }
-
-    @Test
-    public void createAccount_AccountCurrencyCodeIsEmptyString_ShouldReturnErrorDto() throws Exception {
-        Account account = createAccount(null, AccountType.CURRENT, "");
-        mockMvc.perform(post("/account")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(account)))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message").value("Missed account currency"))
-                .andExpect(jsonPath("$.type").value("INVALID"));
-    }
-
-    @Test
-    public void createAccount_AccountTypeIsNull_ShouldReturnErrorDto() throws Exception {
-        Account account = createAccount(null, null, "980");
-        mockMvc.perform(post("/account")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(account)))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message").value("Missed account type"))
-                .andExpect(jsonPath("$.type").value("INVALID"));
+                .andExpect(content().json(ERROR_DTO_JSON));
     }
 
     @Test
     public void createAccount_AccountIsValid_ShouldReturnSuccessMessage() throws Exception {
-        Account account = createAccount(null, AccountType.DEPOSIT, "980");
-        when(accountRepository.create(account)).thenReturn(createAccount(1));
+        when(accountService.create(accountWithNullId)).thenReturn("Created account #1");
         MvcResult result = mockMvc.perform(post("/account")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(account)))
+                .content(ACCOUNT_WITH_NULL_ID_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         String body = result.getResponse().getContentAsString();
         Assert.assertEquals("Created account #1", body);
-        verify(accountRepository, times(1)).create(account);
-        verifyNoMoreInteractions(accountRepository);
     }
 
     @Test
     public void updateAccount_AccountIsValid_ShouldReturnSuccessMessage() throws Exception {
-        Account account = createAccount(1);
+        when(accountService.update(accountWithNotNullId)).thenReturn("Account updated successfully");
         MvcResult result = mockMvc.perform(put("/account")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(account)))
+                .content(ACCOUNT_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         String body = result.getResponse().getContentAsString();
         Assert.assertEquals("Account updated successfully", body);
-        verify(accountRepository, times(1)).update(account);
-        verifyNoMoreInteractions(accountRepository);
     }
 
     @Test
-    public void updateAccount_AccountIdIsNull_ShouldReturnErrorDto() throws Exception {
-        Account account = createAccount(null);
+    public void updateAccount_AccountIsInvalid_ShouldReturnErrorDto() throws Exception {
+        when(accountService.update(accountWithNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(put("/account")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(account)))
+                .content(ACCOUNT_WITH_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message")
-                        .value("Can not provide update operation with passed account"))
-                .andExpect(jsonPath("$.type")
-                        .value("INVALID"));
+                .andExpect(content().json(ERROR_DTO_JSON));
     }
 
     @Test
     public void deleteAccount_AccountFound_ShouldReturnSuccessMessage() throws Exception {
-        doNothing().when(accountRepository).deleteById(1);
+        when(accountService.delete(1)).thenReturn("Deleted account #1");
         MvcResult result = mockMvc.perform(delete("/account?accountId=1"))
                 .andExpect(status().isOk())
                 .andReturn();
         String body = result.getResponse().getContentAsString();
         Assert.assertEquals("Deleted account #1", body);
-        verify(accountRepository, times(1)).deleteById(1);
-        verifyNoMoreInteractions(accountRepository);
     }
 
     @Test
     public void getByClientId_AccountsAndClientFound_ShouldRenderAccountsByClientView() throws Exception {
-        List<Account> accounts = Arrays.asList(Mockito.mock(Account.class), Mockito.mock(Account.class));
-        Client client = Mockito.mock(Client.class);
-        when(clientRepository.getById(1)).thenReturn(client);
-        when(accountRepository.getByClientId(1)).thenReturn(accounts);
+        List<Account> accounts = Collections.singletonList(accountWithNotNullId);
+        when(clientService.getById(1)).thenReturn(client);
+        when(accountService.getByClientId(1)).thenReturn(accounts);
         mockMvc.perform(get("/account/get-by-client?clientId=1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("accountsByClient"))
@@ -206,62 +190,33 @@ public class AccountControllerTest {
                 .andExpect(model().attributeExists("accounts"))
                 .andExpect(model().attribute("accounts", accounts))
                 .andExpect(model().attribute("client", client));
-        verify(accountRepository, times(1)).getByClientId(1);
-        verify(clientRepository, times(1)).getById(1);
-        verifyNoMoreInteractions(accountRepository);
-        verifyNoMoreInteractions(clientRepository);
     }
 
     @Test
-    public void getByClientId_ClientIsNull_ShouldReturnErrorDto() throws Exception {
-        when(clientRepository.getById(1)).thenReturn(null);
+    public void getByClientId_ClientNotFound_ShouldReturnErrorDto() throws Exception {
+        when(clientService.getById(1)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/account/get-by-client?clientId=1"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message")
-                        .value("Client with passed ID do not exist"))
-                .andExpect(jsonPath("$.type")
-                        .value("INVALID"));
-        verify(clientRepository, times(1)).getById(1);
-        verifyNoMoreInteractions(clientRepository);
-    }
-
-    private Account createAccount(Integer id, AccountType type, String currencyCode) {
-        Account account = new Account();
-        account.setId(id);
-        account.setType(type);
-        account.setCurrency(createCurrency(currencyCode));
-        return account;
-    }
-
-    private Account createAccount(Integer id) {
-        Account account = new Account();
-        account.setId(id);
-        return account;
-    }
-
-    private Currency createCurrency(String code) {
-        Currency currency = new Currency();
-        currency.setCode(code);
-        return currency;
+                .andExpect(content().json(ERROR_DTO_JSON));
     }
 
     @Configuration
     @Import(WebConfiguration.class)
     public static class TestConfiguration {
         @Bean
-        public AccountRepository accountRepository() {
-            return mock(AccountRepository.class);
+        public AccountService accountService() {
+            return mock(AccountService.class);
         }
 
         @Bean
-        public ClientRepository clientRepository() {
-            return mock(ClientRepository.class);
+        public ClientService clientService() {
+            return mock(ClientService.class);
         }
 
         @Bean
-        public AccountController accountController(AccountRepository accountRepository, ClientRepository clientRepository) {
-            return new AccountController(accountRepository, clientRepository);
+        public AccountController accountController(ClientService clientService, AccountService accountService) {
+            return new AccountController(accountService, clientService);
         }
 
         @Bean

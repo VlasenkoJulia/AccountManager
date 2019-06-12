@@ -123,6 +123,9 @@ $(document).ready(function () {
 
         account.number = $(form).find("[name=number]").val();
         account.type = $(form).find("[name=type]").find('option:selected').val();
+        if (account.type === "") {
+            account.type = null;
+        }
         account.currency = currency;
         account.client = owner;
         let body = JSON.stringify(account);
