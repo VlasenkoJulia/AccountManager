@@ -1,9 +1,5 @@
 package account_manager.account;
 
-import account_manager.card.Card;
-import account_manager.card.CardRepository;
-import account_manager.client.Client;
-import account_manager.currency_converter.Currency;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -14,17 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 @Repository
 @Transactional
 public class AccountRepository {
-    //    private final CardRepository cardRepository;
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public AccountRepository(/*CardRepository cardRepository, */SessionFactory sessionFactory) {
-//        this.cardRepository = cardRepository;
+    public AccountRepository(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
@@ -42,38 +38,11 @@ public class AccountRepository {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
         session.delete(account);
-// TODO: 24.05.2019 rework using service
-//        cardRepository.deleteNotActive();
     }
 
     public Account getById(int id) {
         Session session = sessionFactory.getCurrentSession();
-        Account dBAccount = session.get(Account.class, id);
-        Currency currency = new Currency(
-                dBAccount.getCurrency().getCode(),
-                dBAccount.getCurrency().getRate(),
-                dBAccount.getCurrency().getName(),
-                dBAccount.getCurrency().getIso()
-        );
-        Client client = new Client(
-                dBAccount.getClient().getId(),
-                dBAccount.getClient().getLastName(),
-                dBAccount.getClient().getFirstName()
-        );
-        Set<Card> cards = new HashSet<>();
-        for (Card card : dBAccount.getCards()) {
-            cards.add(new Card(card.getId(), card.getNumber()));
-        }
-        return new Account(
-                dBAccount.getId(),
-                dBAccount.getNumber(),
-                currency,
-                dBAccount.getType(),
-                dBAccount.getBalance(),
-                dBAccount.getOpenDate(),
-                client,
-                cards
-        );
+        return session.get(Account.class, id);
     }
 
     public List<Account> getByClientId(int id) {

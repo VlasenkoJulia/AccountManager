@@ -1,5 +1,9 @@
 package account_manager.account;
 
+import account_manager.card.Card;
+import account_manager.card.CardService;
+import account_manager.client.Client;
+import account_manager.currency_converter.Currency;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,8 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -18,6 +21,8 @@ public class AccountServiceTest {
     AccountRepository accountRepository;
     @Mock
     AccountValidator validator;
+    @Mock
+    CardService cardService;
     @InjectMocks
     AccountService accountService;
 
@@ -35,7 +40,9 @@ public class AccountServiceTest {
 
     @Test
     public void getById_AccountFound_ShouldReturnAccount() {
-        Account account = createAccount(1);
+        Client client = new Client(1, "John", "Doe");
+        account_manager.currency_converter.Currency currency = new Currency("840", 1.0, "US Dollar", "USD");
+        Account account = new Account(1, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
         when(accountRepository.getById(1)).thenReturn(account);
         doNothing().when(validator).validateGet(account);
         Account accountFound = accountService.getById(1);
@@ -75,10 +82,22 @@ public class AccountServiceTest {
     }
 
     @Test
-    public void delete_ClientIdIsValid_ShouldReturnSuccessMessage() {
+    public void deleteById_ClientIdIsValid_ShouldReturnSuccessMessage() {
+        ArrayList<Card> cards = new ArrayList<>();
+
+        ArrayList<Account> accounts = new ArrayList<>(Collections.singletonList(new Account()));
+        HashSet<Card> accountCards = new HashSet<>(
+                Collections.singletonList(new Card(1, "111", Collections.emptyList())));
+        accounts.get(0).setCards(accountCards);
+        accounts.get(0).setId(1);
+
+        cards.add(new Card(1, "111", accounts));
         doNothing().when(accountRepository).deleteById(1);
-        String message = accountService.delete(1);
+        when(cardService.getByAccountId(1)).thenReturn(cards);
+        when(cardService.deleteById(1)).thenReturn("Deleted card #1");
+        String message = accountService.deleteById(1);
         Assert.assertEquals("Deleted account #1", message);
+        verify(cardService).deleteById(1);
     }
 
     @Test(expected = InputParameterValidationException.class)

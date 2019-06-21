@@ -32,7 +32,7 @@ public class ClientService {
         return "Client updated successfully";
     }
 
-    public String delete(Integer clientId) {
+    public String deleteById(Integer clientId) {
         clientRepository.deleteById(clientId);
         return "Deleted client #" + clientId;
     }

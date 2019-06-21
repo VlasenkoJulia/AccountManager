@@ -3,9 +3,9 @@ package account_manager.web.controllers;
 import account_manager.WebConfiguration;
 import account_manager.account.Account;
 import account_manager.card.Card;
-import account_manager.card.CardRepository;
+import account_manager.card.CardService;
 import account_manager.web.exception_handling.CustomExceptionHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,12 +23,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,124 +40,102 @@ public class CardControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private CardRepository cardRepository;
+    private CardService cardService;
     @Autowired
     private WebApplicationContext webAppContext;
 
     @Before
     public void setup() {
-        reset(cardRepository);
+        reset(cardService);
         mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
     }
 
+    private final String EXCEPTION_MESSAGE = "Exception message";
+    private final String ERROR_DTO_JSON = "{\n"
+            + "  \"message\": \"Exception message\",\n"
+            + "  \"type\": \"INVALID\"\n"
+            + "}";
+    private List<Account> accounts = new ArrayList<>(Collections.singletonList(new Account()));
+    private Card cardWithNotNullId = new Card(1, "111", accounts);
+    private final String CARD_WITH_NOT_NULL_ID_JSON = "{\n"
+            + "  \"id\": 1,\n"
+            + "  \"number\": \"111\",\n"
+            + "  \"accounts\": [\n"
+            + "    {}\n"
+            + "  ]\n"
+            + "}";
+
+    private Card cardWithNullId = new Card(null, "111", accounts);
+    private final String CARD_WITH_NULL_ID_JSON = "{\n"
+            + "  \"id\": null,\n"
+            + "  \"number\": \"111\",\n"
+            + "  \"accounts\": [\n"
+            + "    {}\n"
+            + "  ]\n"
+            + "}";
+
+
     @Test
     public void getCardById_CardNotFound_ShouldReturnErrorDto() throws Exception {
-        when(cardRepository.getById(1)).thenReturn(null);
+        when(cardService.getById(1)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/card?cardId=1"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message")
-                        .value("Card with passed ID do not exist"))
-                .andExpect(jsonPath("$.type")
-                        .value("INVALID"));
-        verify(cardRepository, times(1)).getById(1);
-        verifyNoMoreInteractions(cardRepository);
+                .andExpect(content().json(ERROR_DTO_JSON));
     }
 
     @Test
     public void getCardById_CardFound_ShouldReturnFoundCard() throws Exception {
-        when(cardRepository.getById(1)).thenReturn(createCard(1));
+        when(cardService.getById(1)).thenReturn(cardWithNotNullId);
         mockMvc.perform(get("/card?cardId=1"))
-                .andExpect(status().isOk());
-        verify(cardRepository, times(1)).getById(1);
-        verifyNoMoreInteractions(cardRepository);
+                .andExpect(status().isOk())
+                .andExpect(content().json(CARD_WITH_NOT_NULL_ID_JSON));
     }
 
     @Test
-    public void createCard_CardIdIsNotNull_ShouldReturnErrorDto() throws Exception {
-        Card card = createCard(1);
+    public void createCard_CardIsNotValid_ShouldReturnErrorDto() throws Exception {
+        when(cardService.create(cardWithNotNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(post("/card")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(card)))
+                .content(CARD_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message")
-                        .value("Can not provide insert operation with passed card"))
-                .andExpect(jsonPath("$.type")
-                        .value("INVALID"));
-    }
-
-    @Test
-    public void createCard_AccountsSetIsEmpty_ShouldReturnErrorDto() throws Exception {
-        Card card = createCard("111", new HashSet<>(0));
-        mockMvc.perform(post("/card")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(card)))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.message")
-                        .value("Card can not be created without reference to the account(s)"))
-                .andExpect(jsonPath("$.type")
-                        .value("INVALID"));
+                .andExpect(content().json(ERROR_DTO_JSON));
     }
 
     @Test
     public void createCard_CardIsValid_ShouldReturnSuccessMessage() throws Exception {
-        Set<Account> accounts = new HashSet<>(1);
-        accounts.add(new Account());
-        Card card = createCard("111", accounts);
-        doNothing().when(cardRepository).create(card);
+        when(cardService.create(cardWithNullId)).thenReturn("Created card #111");
         MvcResult result = mockMvc.perform(post("/card")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(new ObjectMapper().writeValueAsString(card)))
+                .content(CARD_WITH_NULL_ID_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         String body = result.getResponse().getContentAsString();
         Assert.assertEquals("Created card #111", body);
-        verify(cardRepository, times(1)).create(card);
-        verifyNoMoreInteractions(cardRepository);
     }
 
     @Test
     public void deleteCard_CardIsValid_ShouldReturnSuccessMessage() throws Exception {
-        doNothing().when(cardRepository).deleteById(1);
+        when(cardService.deleteById(1)).thenReturn("Deleted card #1");
         MvcResult result = mockMvc.perform(delete("/card?cardId=1"))
                 .andExpect(status().isOk())
                 .andReturn();
         String body = result.getResponse().getContentAsString();
         Assert.assertEquals("Deleted card #1", body);
-        verify(cardRepository, times(1)).deleteById(1);
-        verifyNoMoreInteractions(cardRepository);
-    }
-
-
-    private Card createCard(String number, Set<Account> accounts) {
-        Card card = new Card();
-        card.setId(null);
-        card.setNumber(number);
-        card.setAccounts(accounts);
-        return card;
-    }
-
-
-    private Card createCard(Integer id) {
-        Card card = new Card();
-        card.setId(id);
-        return card;
     }
 
     @Configuration
     @Import(WebConfiguration.class)
     public static class TestConfiguration {
-
         @Bean
-        public CardRepository cardRepository() {
-            return mock(CardRepository.class);
+        public CardService cardService() {
+            return mock(CardService.class);
         }
 
         @Bean
-        public CardController cardController(CardRepository cardRepository) {
-            return new CardController(cardRepository);
+        public CardController cardController(CardService cardService) {
+            return new CardController(cardService);
         }
 
         @Bean

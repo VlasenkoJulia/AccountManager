@@ -25,7 +25,7 @@ public class ClientServiceTest {
     }
 
     @Test(expected = InputParameterValidationException.class)
-    public void getById_ClientNotFound_ShouldThroeException() {
+    public void getById_ClientNotFound_ShouldThrowException() {
         when(clientRepository.getById(1)).thenReturn(null);
         doThrow(InputParameterValidationException.class).when(validator).validateGet(null);
         clientService.getById(1);
@@ -73,9 +73,9 @@ public class ClientServiceTest {
     }
 
     @Test
-    public void delete_ClientIdIsValid_ShouldReturnSuccessMessage() {
+    public void deleteById_ClientFound_ShouldReturnSuccessMessage() {
         doNothing().when(clientRepository).deleteById(1);
-        String message = clientService.delete(1);
+        String message = clientService.deleteById(1);
         Assert.assertEquals("Deleted client #1", message);
     }
 

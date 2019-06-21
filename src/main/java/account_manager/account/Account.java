@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -43,7 +42,7 @@ public class Account {
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "card_id")
     )
-    private Set<Card> cards = new HashSet<>();
+    private Set<Card> cards;
 
     public Account() {
     }

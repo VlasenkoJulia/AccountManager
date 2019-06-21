@@ -2,9 +2,7 @@ package account_manager.web.controllers;
 
 
 import account_manager.client.Client;
-import account_manager.client.ClientRepository;
 import account_manager.client.ClientService;
-import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +37,6 @@ public class ClientController {
     @DeleteMapping
     @ResponseBody
     public String deleteClient(@RequestParam Integer clientId) {
-        return clientService.delete(clientId);
+        return clientService.deleteById(clientId);
     }
 }

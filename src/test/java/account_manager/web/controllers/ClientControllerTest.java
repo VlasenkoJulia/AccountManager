@@ -3,9 +3,7 @@ package account_manager.web.controllers;
 
 import account_manager.WebConfiguration;
 import account_manager.client.Client;
-import account_manager.client.ClientRepository;
 import account_manager.client.ClientService;
-import account_manager.client.ClientValidator;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
@@ -133,7 +131,7 @@ public class ClientControllerTest {
 
     @Test
     public void deleteCard_CardIsValid_ShouldReturnSuccessMessage() throws Exception {
-        when(clientService.delete(1)).thenReturn("Deleted client #1");
+        when(clientService.deleteById(1)).thenReturn("Deleted client #1");
         MvcResult result = mockMvc.perform(delete("/client?clientId=1"))
                 .andExpect(status().isOk())
                 .andReturn();

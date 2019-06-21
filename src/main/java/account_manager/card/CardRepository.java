@@ -1,17 +1,19 @@
 package account_manager.card;
 
 import account_manager.account.Account;
-import account_manager.account.AccountRepository;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Root;
+import java.util.List;
 
 @Repository
 @Transactional
@@ -36,7 +38,7 @@ public class CardRepository {
         return session.get(Card.class, id);
     }
 
-    public void deleteById(int id){
+    public void deleteById(int id) {
         Session session = sessionFactory.getCurrentSession();
         Card card = session.get(Card.class, id);
         if (card == null) {
@@ -47,13 +49,18 @@ public class CardRepository {
             account.getCards().remove(card);
         }
     }
-// TODO: 24.05.2019 rework this logic using service
-//    public void deleteNotActive() {
-//        List<Integer> notActiveCardIds = jdbcTemplate.query(
-//                "SELECT id FROM card"
-//                        + " WHERE NOT EXISTS ("
-//                        + "SELECT * FROM account_cards WHERE card.id = account_cards.card_id)",
-//                (resultSet, i) -> resultSet.getInt("id"));
-//        notActiveCardIds.forEach(cardId -> jdbcTemplate.update("DELETE FROM card WHERE id = ?", cardId));
-//    }
+
+    public List<Card> getByAccountId(Integer accountId) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Card> criteriaQuery = criteriaBuilder.createQuery(Card.class);
+        Root<Account> accountRoot = criteriaQuery.from(Account.class);
+
+        criteriaQuery.where(criteriaBuilder.equal(accountRoot.get("id"),
+                accountId));
+        Join<Account, Card> accounts = accountRoot.join("cards");
+        CriteriaQuery<Card> cq = criteriaQuery.select(accounts);
+        TypedQuery<Card> query = session.createQuery(cq);
+        return query.getResultList();
+    }
 }

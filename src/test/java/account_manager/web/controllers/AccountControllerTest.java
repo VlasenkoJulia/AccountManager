@@ -169,7 +169,7 @@ public class AccountControllerTest {
 
     @Test
     public void deleteAccount_AccountFound_ShouldReturnSuccessMessage() throws Exception {
-        when(accountService.delete(1)).thenReturn("Deleted account #1");
+        when(accountService.deleteById(1)).thenReturn("Deleted account #1");
         MvcResult result = mockMvc.perform(delete("/account?accountId=1"))
                 .andExpect(status().isOk())
                 .andReturn();

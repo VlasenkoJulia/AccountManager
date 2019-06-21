@@ -232,7 +232,7 @@
                 <configuration>
                     <user>root</user>
                     <password>root</password>
-                    <url>jdbc:mysql://localhost:3306/bank_database</url>
+                    <url>jdbc:mysql://localhost:3306/bank_db</url>
                 </configuration>
             </plugin>
         </plugins>

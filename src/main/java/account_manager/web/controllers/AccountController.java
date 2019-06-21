@@ -52,6 +52,6 @@ public class AccountController {
     @DeleteMapping
     @ResponseBody
     public String deleteAccount(@RequestParam Integer accountId) {
-        return accountService.delete(accountId);
+        return accountService.deleteById(accountId);
     }
 }

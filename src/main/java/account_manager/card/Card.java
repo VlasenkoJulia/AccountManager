@@ -3,9 +3,8 @@ package account_manager.card;
 import account_manager.account.Account;
 
 import javax.persistence.*;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 public class Card {
@@ -14,7 +13,7 @@ public class Card {
     private Integer id;
     private String number;
     @ManyToMany(mappedBy = "cards")
-    private Set<Account> accounts = new HashSet<>();
+    private List<Account> accounts;
 
     public Card() {
     }
@@ -22,6 +21,12 @@ public class Card {
     public Card(Integer id, String number) {
         this.id = id;
         this.number = number;
+    }
+
+    public Card(Integer id, String number, List<Account> accounts) {
+        this.id = id;
+        this.number = number;
+        this.accounts = accounts;
     }
 
     public Integer getId() {
@@ -40,11 +45,11 @@ public class Card {
         this.number = number;
     }
 
-    public Set<Account> getAccounts() {
+    public List<Account> getAccounts() {
         return accounts;
     }
 
-    public void setAccounts(Set<Account> accounts) {
+    public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
     }
 
