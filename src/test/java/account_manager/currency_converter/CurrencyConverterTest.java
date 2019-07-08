@@ -1,11 +1,10 @@
 package account_manager.currency_converter;
 
 import account_manager.account.Account;
-import account_manager.account.AccountRepository;
+import account_manager.account.AccountService;
 import account_manager.web.exception_handling.CurrencyConversionValidationException;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import junitparams.JUnitParamsRunner;
-import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,73 +21,39 @@ public class CurrencyConverterTest {
     private final static double VALID_AMOUNT = 1000.0;
 
     @Mock
-    AccountRepository accountRepository;
+    AccountService accountService;
     @Mock
-    CurrencyRepository currencyRepository;
+    CurrencyService currencyService;
     @InjectMocks
     CurrencyConverter currencyConverter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(accountRepository.getById(VALID_SOURCE_ID)).thenReturn(createAccount(VALID_SOURCE_ID, 2000.0, "980", 27.15));
-        when(accountRepository.getById(VALID_TARGET_ID)).thenReturn(createAccount(VALID_TARGET_ID, 2000.0, "978", 0.88));
-        when(currencyRepository.getCurrency("980")).thenReturn(createCurrency("980", 27.15));
-        when(currencyRepository.getCurrency("978")).thenReturn(createCurrency("978", 0.88));
+        when(accountService.getById(VALID_SOURCE_ID)).thenReturn(createAccount(VALID_SOURCE_ID, 2000.0, "980", 27.15));
+        when(accountService.getById(VALID_TARGET_ID)).thenReturn(createAccount(VALID_TARGET_ID, 2000.0, "978", 0.88));
+        when(currencyService.getByCode("980")).thenReturn(createCurrency("980", 27.15));
+        when(currencyService.getByCode("978")).thenReturn(createCurrency("978", 0.88));
     }
 
     @Test(expected = InputParameterValidationException.class)
     public void shouldThrowExceptionIfSourceAccountIsNull() {
         ConversionDto conversionDto = new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, VALID_AMOUNT);
-        when(accountRepository.getById(VALID_SOURCE_ID)).thenReturn(null);
+        when(accountService.getById(VALID_SOURCE_ID)).thenReturn(null);
         currencyConverter.convert(conversionDto);
     }
 
     @Test(expected = InputParameterValidationException.class)
     public void shouldThrowExceptionIfTargetAccountIsNull() {
         ConversionDto conversionDto = new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, VALID_AMOUNT);
-        when(accountRepository.getById(VALID_TARGET_ID)).thenReturn(null);
+        when(accountService.getById(VALID_TARGET_ID)).thenReturn(null);
         currencyConverter.convert(conversionDto);
     }
 
     @Test(expected = CurrencyConversionValidationException.class)
     public void shouldThrowExceptionIfNotEnoughBalance() {
-        when(accountRepository.getById(VALID_SOURCE_ID)).thenReturn(createAccount(VALID_SOURCE_ID, 10.0));
+        when(accountService.getById(VALID_SOURCE_ID)).thenReturn(createAccount(VALID_SOURCE_ID, 10.0));
         currencyConverter.convert(new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, VALID_AMOUNT));
-    }
-
-    @Test(expected = InputParameterValidationException.class)
-    public void shouldThrowExceptionIfSourceCurrencyIsNull() {
-        ConversionDto conversionDto = new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, VALID_AMOUNT);
-        when(currencyRepository.getCurrency("980")).thenReturn(null);
-        currencyConverter.convert(conversionDto);
-    }
-
-    @Test(expected = InputParameterValidationException.class)
-    public void shouldThrowExceptionIfTargetCurrencyIsNull() {
-        ConversionDto conversionDto = new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, VALID_AMOUNT);
-        when(currencyRepository.getCurrency("978")).thenReturn(null);
-        currencyConverter.convert(conversionDto);
-    }
-
-    private static Object[] getInvalidCurrencyRates() {
-        return new Double[][]{{0.0}, {-5.0}};
-    }
-
-    @Test(expected = InputParameterValidationException.class)
-    @Parameters(method = "getInvalidCurrencyRates")
-    public void shouldThrowExceptionIfSourceCurrencyRateIsInvalid(Double invalidCurrencyRate) {
-        ConversionDto conversionDto = new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, VALID_AMOUNT);
-        when(currencyRepository.getCurrency("980")).thenReturn(createCurrency("980", invalidCurrencyRate));
-        currencyConverter.convert(conversionDto);
-    }
-
-    @Test(expected = InputParameterValidationException.class)
-    @Parameters(method = "getInvalidCurrencyRates")
-    public void shouldThrowExceptionIfTargetCurrencyRateIsInvalid(Double invalidCurrencyRate) {
-        ConversionDto conversionDto = new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, VALID_AMOUNT);
-        when(currencyRepository.getCurrency("978")).thenReturn(createCurrency("978", invalidCurrencyRate));
-        currencyConverter.convert(conversionDto);
     }
 
     @Test
@@ -97,8 +62,8 @@ public class CurrencyConverterTest {
         double exchangeRate = 0.88 / 27.15;
         double amountToAdd = Math.round((VALID_AMOUNT * exchangeRate) * 100.0) / 100.0;
         currencyConverter.convert(conversionDto);
-        verify(accountRepository).update(refEq(createAccount(VALID_SOURCE_ID, 1000.0, "980", 27.15)));
-        verify(accountRepository).update(refEq(createAccount(VALID_TARGET_ID, (2000.0 + amountToAdd), "978", 0.88)));
+        verify(accountService).update(refEq(createAccount(VALID_SOURCE_ID, 1000.0, "980", 27.15)));
+        verify(accountService).update(refEq(createAccount(VALID_TARGET_ID, (2000.0 + amountToAdd), "978", 0.88)));
     }
 
     private Account createAccount(Integer id, double balance) {

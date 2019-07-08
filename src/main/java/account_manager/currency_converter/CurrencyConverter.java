@@ -1,7 +1,7 @@
 package account_manager.currency_converter;
 
 import account_manager.account.Account;
-import account_manager.account.AccountRepository;
+import account_manager.account.AccountService;
 import account_manager.web.exception_handling.CurrencyConversionValidationException;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,23 +10,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class CurrencyConverter {
-    private final AccountRepository accountRepository;
-    private final CurrencyRepository currencyRepository;
+    private final AccountService accountService;
+    private final CurrencyService currencyService;
 
     @Autowired
-    public CurrencyConverter(CurrencyRepository currencyRepository, AccountRepository accountRepository) {
-        this.currencyRepository = currencyRepository;
-        this.accountRepository = accountRepository;
+    public CurrencyConverter(CurrencyService currencyService, AccountService accountService) {
+        this.currencyService = currencyService;
+        this.accountService = accountService;
     }
 
     @Transactional
     public void convert(ConversionDto conversionDto) {
         double amount = conversionDto.getAmount();
-        Account sourceAccount = accountRepository.getById(conversionDto.getSourceAccountId());
+        Account sourceAccount = accountService.getById(conversionDto.getSourceAccountId());
         if (sourceAccount == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
-        Account targetAccount = accountRepository.getById(conversionDto.getTargetAccountId());
+        Account targetAccount = accountService.getById(conversionDto.getTargetAccountId());
         if (targetAccount == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
@@ -39,8 +39,8 @@ public class CurrencyConverter {
     }
 
     private void updateBalance(Account sourceAccount, Account targetAccount) {
-        accountRepository.update(sourceAccount);
-        accountRepository.update(targetAccount);
+        accountService.update(sourceAccount);
+        accountService.update(targetAccount);
     }
 
     private void checkBalance(Account sourceAccount, double amount) {
@@ -49,16 +49,8 @@ public class CurrencyConverter {
     }
 
     private double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) {
-        Currency sourceCurrency = currencyRepository.getCurrency(sourceCurrencyCode);
-        checkCurrency(sourceCurrency);
-        Currency targetCurrency = currencyRepository.getCurrency(targetCurrencyCode);
-        checkCurrency(targetCurrency);
+        Currency sourceCurrency = currencyService.getByCode(sourceCurrencyCode);
+        Currency targetCurrency = currencyService.getByCode(targetCurrencyCode);
         return targetCurrency.getRate() / sourceCurrency.getRate();
-    }
-
-    private void checkCurrency(Currency currency) {
-        if (currency == null || currency.getRate() <= 0) {
-            throw new InputParameterValidationException("Invalid currency rate or currency");
-        }
     }
 }
