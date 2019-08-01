@@ -20,9 +20,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {LoginControllerTest.TestConfiguration.class})
+@ContextConfiguration(classes = {MainControllerTest.TestConfiguration.class})
 @WebAppConfiguration
-public class LoginControllerTest {
+public class MainControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webAppContext;
@@ -45,8 +45,8 @@ public class LoginControllerTest {
     @Import(WebConfiguration.class)
     public static class TestConfiguration {
         @Bean
-        public LoginController loginController() {
-            return new LoginController();
+        public MainController mainController() {
+            return new MainController();
         }
 
         @Bean

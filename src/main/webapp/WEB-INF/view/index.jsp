@@ -12,10 +12,10 @@
 </head>
 <body>
 <header>
-    <h1>Account manager</h1>
+    <h1>Welcome to Account manager! You are logged in as ${username} </h1>
     <nav>
         <ul>
-            <li><a href="">Accounts</a>
+            <li><a href="/account?accountId=3">Accounts</a>
             <li><a href="">Clients</a>
             <li><a href="">Cards</a>
         </ul>
