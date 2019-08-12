@@ -20,7 +20,7 @@ public class ClientValidator {
 
     void validateUpdate(Client client) {
         if (client.getId() == null) {
-            throw new InputParameterValidationException("Can not provide update operation with passed client");
+            throw new InputParameterValidationException("Can not provide setResetToken operation with passed client");
         }
     }
 }

@@ -6,11 +6,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
-public class UserPrincipal implements UserDetails {
+public class AccountManagerUserDetails implements UserDetails {
     private User user;
 
-    public UserPrincipal(User user) {
+    public AccountManagerUserDetails(User user) {
         this.user = user;
     }
 
@@ -47,5 +48,18 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AccountManagerUserDetails)) return false;
+        AccountManagerUserDetails that = (AccountManagerUserDetails) o;
+        return Objects.equals(user, that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user);
     }
 }

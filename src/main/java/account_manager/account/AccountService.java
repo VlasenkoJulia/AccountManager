@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Transactional
+
 public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountValidator validator;
@@ -27,6 +27,7 @@ public class AccountService {
         this.cardService = cardService;
     }
 
+    @Transactional
     public Account getById(Integer accountId) {
         Account account = accountRepository.getById(accountId);
         validator.validateGet(account);

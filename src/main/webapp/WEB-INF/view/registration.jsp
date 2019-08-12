@@ -20,6 +20,9 @@
         <label><b>User name</b></label>
         <input type="text" placeholder="Enter Username" name="username"  required>
 
+        <label><b>Email</b></label>
+        <input type="text" placeholder="Enter Email" name="email"  required>
+
         <label><b>Password</b></label>
         <input type="password" placeholder="Enter Password" name="password" required>
 

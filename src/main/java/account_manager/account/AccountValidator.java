@@ -25,7 +25,7 @@ public class AccountValidator {
 
     void validateUpdate(Account account) {
         if (account.getId() == null) {
-            throw new InputParameterValidationException("Can not provide update operation with passed account");
+            throw new InputParameterValidationException("Can not provide setResetToken operation with passed account");
         }
     }
 

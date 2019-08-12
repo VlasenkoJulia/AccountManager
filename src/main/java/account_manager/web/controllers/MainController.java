@@ -14,16 +14,4 @@ public class MainController {
         modelAndView.addObject("username", principal.getName());
         return modelAndView;
     }
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
-    @GetMapping("/registration")
-    public String registration() {
-        return "registration";
-    }
-
-
 }

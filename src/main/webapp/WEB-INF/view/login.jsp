@@ -24,8 +24,12 @@
 
         <button type="submit">Login</button>
     </form>
-    <div class="form-group">
+    <div>
         <span>New user? <a href="/registration">Register here</a></span>
+    </div>
+
+    <div>
+        <span>Forgot password? <a href="/forgotPassword">Password reset here</a></span>
     </div>
 </div>
 </body>

@@ -1,14 +1,15 @@
 $(document).ready(function () {
-    $(".registerbtn").click(function () {
+    $(".resetBtn").click(function () {
         let user = {};
-        user.userName = $("[name=username]").val();
+        user.userName = $("[name=userName]").val();
         user.email = $("[name=email]").val();
+        user.resetToken = $("[name=token]").val();
         user.password = $("[name=password]").val();
         user.confirmPassword = $("[name=password-confirm]").val();
         let body = JSON.stringify(user);
-        let ajax = $.ajax({
+        $.ajax({
             type: "POST",
-            url: 'http://localhost:8080/user',
+            url: 'http://localhost:8080/resetPassword',
             contentType: 'application/json',
             data: body,
             async: false,

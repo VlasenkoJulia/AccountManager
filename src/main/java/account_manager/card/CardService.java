@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
 public class CardService {
     private final CardValidator validator;
     private final CardRepository cardRepository;
@@ -22,6 +21,7 @@ public class CardService {
         this.cardRepository = cardRepository;
     }
 
+    @Transactional
     public Card getById(Integer cardId) {
         Card card = cardRepository.getById(cardId);
         validator.validateGet(card);

@@ -11,9 +11,24 @@ public class User {
 
     private String password;
 
+    private String email;
+
+    @Column(name = "reset_token")
+    private String resetToken;
+
     @Transient
     private String confirmPassword;
 
+    public User() {
+    }
+
+    public User(String userName, String password, String email, String resetToken, String confirmPassword) {
+        this.userName = userName;
+        this.password = password;
+        this.email = email;
+        this.resetToken = resetToken;
+        this.confirmPassword = confirmPassword;
+    }
 
     public String getUserName() {
         return userName;
@@ -37,6 +52,22 @@ public class User {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
     }
 
     @Override

@@ -22,7 +22,6 @@ public class UserController {
     @PostMapping
     @ResponseBody
     public String createUser(@RequestBody User user) {
-        userService.create(user);
-        return "User created successfully! You can return to login page and log in!";
+        return userService.create(user);
     }
 }

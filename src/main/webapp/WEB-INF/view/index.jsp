@@ -13,6 +13,7 @@
 <body>
 <header>
     <h1>Welcome to Account manager! You are logged in as ${username} </h1>
+    <p>Want to go back to login page? Please, <a href="<c:url value="/logout" />">Log out</a>.</p>
     <nav>
         <ul>
             <li><a href="/account?accountId=3">Accounts</a>
