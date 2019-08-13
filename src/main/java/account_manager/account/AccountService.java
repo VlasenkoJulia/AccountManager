@@ -1,9 +1,12 @@
 package account_manager.account;
 
+import account_manager.LoggerInterceptor;
 import account_manager.card.Card;
 import account_manager.card.CardService;
 import account_manager.client.Client;
 import account_manager.currency_converter.Currency;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,8 @@ import java.util.Set;
 @Service
 
 public class AccountService {
+    private static Logger log = LoggerFactory.getLogger(AccountService.class.getName());
+
     private final AccountRepository accountRepository;
     private final AccountValidator validator;
     private final CardService cardService;
@@ -54,12 +59,14 @@ public class AccountService {
     public String create(Account account) {
         validator.validateCreate(account);
         Account accountCreated = accountRepository.create(account);
+        log.info("Created account #{}", accountCreated.getId());
         return "Created account #" + accountCreated.getId();
     }
 
     public String update(Account account) {
         validator.validateUpdate(account);
         accountRepository.update(account);
+        log.info("Updated account #{}", account.getId());
         return "Account updated successfully";
     }
 
@@ -72,6 +79,7 @@ public class AccountService {
             }
         }
         accountRepository.deleteById(accountId);
+        log.info("Deleted account #{}", accountId);
         return "Deleted account #" + accountId;
     }
 

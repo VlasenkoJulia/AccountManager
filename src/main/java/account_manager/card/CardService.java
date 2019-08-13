@@ -1,8 +1,11 @@
 package account_manager.card;
 
+import account_manager.LoggerInterceptor;
 import account_manager.account.Account;
 import account_manager.client.Client;
 import account_manager.currency_converter.Currency;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +15,7 @@ import java.util.List;
 
 @Service
 public class CardService {
+    private static Logger log = LoggerFactory.getLogger(CardService.class.getName());
     private final CardValidator validator;
     private final CardRepository cardRepository;
 
@@ -54,16 +58,17 @@ public class CardService {
     public String create(Card card) {
         validator.validateCreate(card);
         cardRepository.create(card);
+        log.info("Created card #{}", card.getNumber());
         return "Created card #" + card.getNumber();
     }
 
     public String deleteById(Integer cardId) {
         cardRepository.deleteById(cardId);
+        log.info("Deleted card #{}", cardId);
         return "Deleted card #" + cardId;
     }
 
     public List<Card> getByAccountId(Integer accountId) {
-//        validator.validateGetByClientId(accountId);
         return cardRepository.getByAccountId(accountId);
     }
 }

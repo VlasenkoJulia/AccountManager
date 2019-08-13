@@ -1,12 +1,17 @@
 package account_manager.user;
 
+import account_manager.LoggerInterceptor;
 import account_manager.web.exception_handling.InputParameterValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
+    private static Logger log = LoggerFactory.getLogger(UserService.class.getName());
+
     private final UserRepository userRepository;
     private final UserValidator validator;
     private final PasswordEncoder passwordEncoder;
@@ -33,6 +38,7 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.create(user);
+        log.info("Created new user {}", user.getUserName());
         return "User created successfully! You can return to login page and log in!";
     }
 
@@ -54,6 +60,7 @@ public class UserService {
         user.setResetToken(null);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.update(user);
+        log.info("User {} reset password", user.getUserName());
         return "Password changed successfully";
     }
 
