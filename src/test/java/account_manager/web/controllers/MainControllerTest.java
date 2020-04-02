@@ -1,8 +1,9 @@
 package account_manager.web.controllers;
 
-import account_manager.WebConfiguration;
-import account_manager.WebSecurityConfig;
-import account_manager.user.AccountManagerUserDetailsService;
+import account_manager.web.WebConfiguration;
+import account_manager.security.WebSecurityConfig;
+import account_manager.security.AccountManagerUserDetailsService;
+import account_manager.web.controller.MainController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,5 +1,7 @@
 package account_manager.currency_converter;
 
+import account_manager.service.dto.ConversionDto;
+import account_manager.service.validator.ConversionDtoValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;

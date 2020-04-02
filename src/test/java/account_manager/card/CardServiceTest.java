@@ -1,9 +1,13 @@
 package account_manager.card;
 
-import account_manager.account.Account;
-import account_manager.account.AccountType;
-import account_manager.client.Client;
-import account_manager.currency_converter.Currency;
+import account_manager.repository.entity.Account;
+import account_manager.repository.enums.AccountType;
+import account_manager.repository.entity.Client;
+import account_manager.repository.entity.Currency;
+import account_manager.repository.entity.Card;
+import account_manager.repository.CardRepository;
+import account_manager.service.CardService;
+import account_manager.service.validator.CardValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 

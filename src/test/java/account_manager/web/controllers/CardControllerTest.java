@@ -1,9 +1,10 @@
 package account_manager.web.controllers;
 
-import account_manager.WebConfiguration;
-import account_manager.account.Account;
-import account_manager.card.Card;
-import account_manager.card.CardService;
+import account_manager.web.WebConfiguration;
+import account_manager.repository.entity.Account;
+import account_manager.repository.entity.Card;
+import account_manager.service.CardService;
+import account_manager.web.controller.CardController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
@@ -80,7 +81,7 @@ public class CardControllerTest {
         when(cardService.getById(1)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/card?cardId=1"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -96,10 +97,10 @@ public class CardControllerTest {
     public void createCard_CardIsNotValid_ShouldReturnErrorDto() throws Exception {
         when(cardService.create(cardWithNotNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(post("/card")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(CARD_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 

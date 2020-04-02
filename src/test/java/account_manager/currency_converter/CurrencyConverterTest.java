@@ -1,7 +1,11 @@
 package account_manager.currency_converter;
 
-import account_manager.account.Account;
-import account_manager.account.AccountService;
+import account_manager.repository.entity.Account;
+import account_manager.service.dto.ConversionDto;
+import account_manager.repository.entity.Currency;
+import account_manager.service.CurrencyConverter;
+import account_manager.service.AccountService;
+import account_manager.service.CurrencyService;
 import account_manager.web.exception_handling.CurrencyConversionValidationException;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import junitparams.JUnitParamsRunner;

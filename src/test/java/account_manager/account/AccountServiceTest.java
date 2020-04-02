@@ -1,9 +1,14 @@
 package account_manager.account;
 
-import account_manager.card.Card;
-import account_manager.card.CardService;
-import account_manager.client.Client;
-import account_manager.currency_converter.Currency;
+import account_manager.repository.entity.Card;
+import account_manager.service.CardService;
+import account_manager.repository.entity.Client;
+import account_manager.repository.entity.Currency;
+import account_manager.repository.entity.Account;
+import account_manager.repository.enums.AccountType;
+import account_manager.repository.AccountRepository;
+import account_manager.service.AccountService;
+import account_manager.service.validator.AccountValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,7 +46,7 @@ public class AccountServiceTest {
     @Test
     public void getById_AccountFound_ShouldReturnAccount() {
         Client client = new Client(1, "John", "Doe");
-        account_manager.currency_converter.Currency currency = new Currency("840", 1.0, "US Dollar", "USD");
+        Currency currency = new Currency("840", 1.0, "US Dollar", "USD");
         Account account = new Account(1, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
         when(accountRepository.getById(1)).thenReturn(account);
         doNothing().when(validator).validateGet(account);

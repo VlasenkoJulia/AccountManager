@@ -14,16 +14,16 @@
         </encoder>
     </appender>
 
-    <logger name="account_manager.client.ClientService" level="INFO">
+    <logger name="account_manager.service.ClientService" level="INFO">
         <appender-ref ref="FILE" />
     </logger>
-    <logger name="account_manager.card.CardService" level="INFO">
+    <logger name="account_manager.service.CardService" level="INFO">
         <appender-ref ref="FILE" />
     </logger>
-    <logger name="account_manager.user.UserService" level="INFO">
+    <logger name="account_manager.service.UserService" level="INFO">
         <appender-ref ref="FILE" />
     </logger>
-    <logger name="account_manager.account.AccountService" level="INFO">
+    <logger name="account_manager.service.AccountService" level="INFO">
         <appender-ref ref="FILE" />
     </logger>
 

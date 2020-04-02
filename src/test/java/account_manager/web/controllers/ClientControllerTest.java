@@ -1,9 +1,10 @@
 package account_manager.web.controllers;
 
 
-import account_manager.WebConfiguration;
-import account_manager.client.Client;
-import account_manager.client.ClientService;
+import account_manager.web.WebConfiguration;
+import account_manager.repository.entity.Client;
+import account_manager.service.ClientService;
+import account_manager.web.controller.ClientController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
@@ -71,7 +72,7 @@ public class ClientControllerTest {
         when(clientService.getById(1)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/client?clientId=1"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -87,10 +88,10 @@ public class ClientControllerTest {
     public void createClient_ClientIsNotValid_ShouldReturnErrorDto() throws Exception {
         when(clientService.create(clientWithNotNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(post("/client")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(CLIENT_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -122,10 +123,10 @@ public class ClientControllerTest {
     public void updateClient_ClientIsNotValid_ShouldReturnErrorDto() throws Exception {
         when(clientService.update(clientWithNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(put("/client")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(CLIENT_WITH_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 

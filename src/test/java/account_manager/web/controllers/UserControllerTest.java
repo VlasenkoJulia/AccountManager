@@ -1,8 +1,9 @@
 package account_manager.web.controllers;
 
-import account_manager.WebConfiguration;
-import account_manager.user.User;
-import account_manager.user.UserService;
+import account_manager.web.WebConfiguration;
+import account_manager.repository.entity.User;
+import account_manager.service.UserService;
+import account_manager.web.controller.UserController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
@@ -72,10 +73,10 @@ public class UserControllerTest {
     public void createUser_InvalidUser_ShouldReturnErrorDto() throws Exception {
         when(userService.create(invalidUser)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(post("/user")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(INVALID_USER_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -83,7 +84,7 @@ public class UserControllerTest {
     public void createUser_ValidUser_ShouldReturnSuccessMessage() throws Exception {
         when(userService.create(validUser)).thenReturn("User created successfully! You can return to login page and log in!");
         MvcResult result = mockMvc.perform(post("/user")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(VALID_USER_JSON))
                 .andExpect(status().isOk())
                 .andReturn();

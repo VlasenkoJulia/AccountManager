@@ -1,5 +1,9 @@
 package account_manager.client;
 
+import account_manager.repository.entity.Client;
+import account_manager.repository.ClientRepository;
+import account_manager.service.ClientService;
+import account_manager.service.validator.ClientValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
 import org.junit.Before;

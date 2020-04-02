@@ -1,12 +1,13 @@
 package account_manager.web.controllers;
 
-import account_manager.WebConfiguration;
-import account_manager.account.Account;
-import account_manager.account.AccountService;
-import account_manager.account.AccountType;
-import account_manager.client.Client;
-import account_manager.client.ClientService;
-import account_manager.currency_converter.Currency;
+import account_manager.web.WebConfiguration;
+import account_manager.repository.entity.Account;
+import account_manager.service.AccountService;
+import account_manager.repository.enums.AccountType;
+import account_manager.repository.entity.Client;
+import account_manager.service.ClientService;
+import account_manager.repository.entity.Currency;
+import account_manager.web.controller.AccountController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
@@ -117,7 +118,7 @@ public class AccountControllerTest {
         when(accountService.getById(1)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/account?accountId=1"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -128,7 +129,7 @@ public class AccountControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(ACCOUNT_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -160,10 +161,10 @@ public class AccountControllerTest {
     public void updateAccount_AccountIsInvalid_ShouldReturnErrorDto() throws Exception {
         when(accountService.update(accountWithNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(put("/account")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(ACCOUNT_WITH_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -197,7 +198,7 @@ public class AccountControllerTest {
         when(clientService.getById(1)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/account/get-by-client?clientId=1"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 

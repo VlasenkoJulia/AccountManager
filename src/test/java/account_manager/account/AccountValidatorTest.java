@@ -1,6 +1,9 @@
 package account_manager.account;
 
-import account_manager.currency_converter.Currency;
+import account_manager.repository.entity.Currency;
+import account_manager.repository.entity.Account;
+import account_manager.repository.enums.AccountType;
+import account_manager.service.validator.AccountValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Before;
 import org.junit.Test;

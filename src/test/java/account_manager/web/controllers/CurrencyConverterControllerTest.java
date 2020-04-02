@@ -1,12 +1,12 @@
 package account_manager.web.controllers;
 
 
-import account_manager.WebConfiguration;
-import account_manager.currency_converter.ConversionDto;
-import account_manager.currency_converter.CurrencyConverterService;
+import account_manager.web.WebConfiguration;
+import account_manager.service.dto.ConversionDto;
+import account_manager.service.CurrencyConverterService;
+import account_manager.web.controller.CurrencyConverterController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -78,10 +77,10 @@ public class CurrencyConverterControllerTest {
                 + "}";
         when(currencyConverterService.convert(notValidConversionDto)).thenThrow(new InputParameterValidationException("Exception message"));
         mockMvc.perform(post("/converter")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(notValidConversionDtoJson))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(errorDtoJson));
     }
 

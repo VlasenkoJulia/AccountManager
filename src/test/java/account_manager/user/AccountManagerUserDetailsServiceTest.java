@@ -1,5 +1,10 @@
 package account_manager.user;
 
+import account_manager.security.AccountManagerUserDetails;
+import account_manager.repository.entity.User;
+import account_manager.repository.UserRepository;
+import account_manager.security.AccountManagerUserDetailsService;
+import account_manager.service.validator.UserValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,9 +17,12 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class AccountManagerUserDetailsServiceTest {
-    @Mock UserRepository userRepository;
-    @Mock UserValidator validator;
-    @InjectMocks AccountManagerUserDetailsService accountManagerUserDetailsService;
+    @Mock
+    UserRepository userRepository;
+    @Mock
+    UserValidator validator;
+    @InjectMocks
+    AccountManagerUserDetailsService accountManagerUserDetailsService;
 
     @Before
     public void setUp() {

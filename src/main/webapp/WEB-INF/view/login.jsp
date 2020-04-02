@@ -13,7 +13,7 @@
 <div class="container">
     <h1>Login page</h1>
     <div class="img_container">
-        <img src="/resources/images/img_avatar.png" class="avatar" alt="avatar">
+        <img src="<c:url value="/resources/images/img_avatar.png" />" class="avatar" alt="avatar">
     </div>
     <form name='f' action="/login" method='POST'>
         <label><b>Username</b></label>

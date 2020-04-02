@@ -1,6 +1,8 @@
 package account_manager.card;
 
-import account_manager.account.Account;
+import account_manager.repository.entity.Account;
+import account_manager.repository.entity.Card;
+import account_manager.service.validator.CardValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Before;
 import org.junit.Test;

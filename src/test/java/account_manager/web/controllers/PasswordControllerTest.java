@@ -1,9 +1,10 @@
 package account_manager.web.controllers;
 
-import account_manager.WebConfiguration;
-import account_manager.user.EmailService;
-import account_manager.user.User;
-import account_manager.user.UserService;
+import account_manager.web.WebConfiguration;
+import account_manager.service.EmailService;
+import account_manager.repository.entity.User;
+import account_manager.service.UserService;
+import account_manager.web.controller.PasswordController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
@@ -88,7 +89,7 @@ public class PasswordControllerTest {
         when(userService.getByEmail("email")).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(post("/forgotPassword?email=email"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -114,7 +115,7 @@ public class PasswordControllerTest {
         when(userService.getByResetToken("token")).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(get("/reset?token=token"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
@@ -137,10 +138,10 @@ public class PasswordControllerTest {
     public void resetPassword_InvalidUser_ShouldReturnErrorDto() throws Exception {
         when(userService.resetPassword(userWithoutToken)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(post("/resetPassword")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(USER_WITHOUT_TOKEN_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
     }
 
