@@ -1,7 +1,7 @@
 package account_manager.currency_converter;
 
-import account_manager.repository.entity.Currency;
-import account_manager.repository.CurrencyRepository;
+import account_manager.repository.currency.Currency;
+import account_manager.repository.currency.CurrencyRepository;
 import account_manager.service.CurrencyService;
 import account_manager.service.validator.CurrencyValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -29,7 +31,7 @@ public class CurrencyServiceTest {
 
     @Test(expected = InputParameterValidationException.class)
     public void getByCode_currencyNotFound_ShouldThrowException() {
-        when(currencyRepository.getCurrency("840")).thenReturn(null);
+        when(currencyRepository.findById("840")).thenReturn(Optional.empty());
         doThrow(InputParameterValidationException.class).when(validator).validateGet(null);
         currencyService.getByCode("840");
     }
@@ -37,7 +39,7 @@ public class CurrencyServiceTest {
     @Test
     public void getByCode_CurrencyFound_ShouldReturnCurrency() {
         Currency currency = new Currency("840", 1.0, "US Dollar", "USD");
-        when(currencyRepository.getCurrency("840")).thenReturn(currency);
+        when(currencyRepository.findById("840")).thenReturn(Optional.of(currency));
         doNothing().when(validator).validateGet(currency);
         Currency currencyFound = currencyService.getByCode("840");
         assertEquals(currency, currencyFound);

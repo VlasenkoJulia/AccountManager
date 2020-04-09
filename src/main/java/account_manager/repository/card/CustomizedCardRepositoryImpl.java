@@ -1,13 +1,11 @@
-package account_manager.repository;
+package account_manager.repository.card;
 
-import account_manager.repository.entity.Account;
-import account_manager.repository.entity.Card;
+import account_manager.repository.account.Account;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -17,29 +15,18 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
-@Transactional
-public class CardRepository {
+public class CustomizedCardRepositoryImpl
+        implements CustomizedCardRepository<Card, Integer> {
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public CardRepository(SessionFactory sessionFactory) {
+    public CustomizedCardRepositoryImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
-    public void create(Card card) {
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(card);
-        for (Account account : card.getAccounts()) {
-            account.getCards().add(card);
-        }
-    }
 
-    public Card getById(int id) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.get(Card.class, id);
-    }
-
-    public void deleteById(int id) {
+    @Override
+    public void deleteById(Integer id) {
         Session session = sessionFactory.getCurrentSession();
         Card card = session.get(Card.class, id);
         if (card == null) {
@@ -51,7 +38,8 @@ public class CardRepository {
         }
     }
 
-    public List<Card> getByAccountId(Integer accountId) {
+    @Override
+    public List<Card> findByAccountId(Integer accountId) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Card> criteriaQuery = criteriaBuilder.createQuery(Card.class);

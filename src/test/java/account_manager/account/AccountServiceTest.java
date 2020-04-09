@@ -1,12 +1,12 @@
 package account_manager.account;
 
-import account_manager.repository.entity.Card;
+import account_manager.repository.account.AccountRepository;
+import account_manager.repository.card.Card;
 import account_manager.service.CardService;
-import account_manager.repository.entity.Client;
-import account_manager.repository.entity.Currency;
-import account_manager.repository.entity.Account;
-import account_manager.repository.enums.AccountType;
-import account_manager.repository.AccountRepository;
+import account_manager.repository.client.Client;
+import account_manager.repository.currency.Currency;
+import account_manager.repository.account.Account;
+import account_manager.repository.account.AccountType;
 import account_manager.service.AccountService;
 import account_manager.service.validator.AccountValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
@@ -38,7 +38,7 @@ public class AccountServiceTest {
 
     @Test(expected = InputParameterValidationException.class)
     public void getById_AccountNotFound_ShouldThrowException() {
-        when(accountRepository.getById(1)).thenReturn(null);
+        when(accountRepository.findById(1)).thenReturn(Optional.empty());
         doThrow(InputParameterValidationException.class).when(validator).validateGet(null);
         accountService.getById(1);
     }
@@ -48,7 +48,7 @@ public class AccountServiceTest {
         Client client = new Client(1, "John", "Doe");
         Currency currency = new Currency("840", 1.0, "US Dollar", "USD");
         Account account = new Account(1, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
-        when(accountRepository.getById(1)).thenReturn(account);
+        when(accountRepository.findById(1)).thenReturn(Optional.of(account));
         doNothing().when(validator).validateGet(account);
         Account accountFound = accountService.getById(1);
         Assert.assertEquals(account, accountFound);
@@ -65,7 +65,7 @@ public class AccountServiceTest {
     public void create_AccountValid_ShouldReturnSuccessMessage() {
         Account account = createAccount(null);
         doNothing().when(validator).validateCreate(account);
-        when(accountRepository.create(account)).thenReturn(createAccount(1));
+        when(accountRepository.save(account)).thenReturn(createAccount(1));
         String message = accountService.create(account);
         Assert.assertEquals("Created account #1", message);
     }
@@ -115,7 +115,7 @@ public class AccountServiceTest {
     public void getByClientId_ClientIdIsValid_ShouldReturnListOfAccounts() {
         doNothing().when(validator).validateGetByClientId(1);
         List<Account> accounts = Arrays.asList(createAccount(1), createAccount(2));
-        when(accountRepository.getByClientId(1)).thenReturn(accounts);
+        when(accountRepository.findAllByClientId(1)).thenReturn(accounts);
         List<Account> accountsByClientId = accountService.getByClientId(1);
         Assert.assertEquals(accounts, accountsByClientId);
     }

@@ -2,7 +2,7 @@ package account_manager.web.controllers;
 
 
 import account_manager.web.WebConfiguration;
-import account_manager.repository.entity.Client;
+import account_manager.repository.client.Client;
 import account_manager.service.ClientService;
 import account_manager.web.controller.ClientController;
 import account_manager.web.exception_handling.CustomExceptionHandler;

@@ -1,6 +1,6 @@
 package account_manager.service.validator;
 
-import account_manager.repository.entity.Account;
+import account_manager.repository.account.Account;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.stereotype.Component;
 

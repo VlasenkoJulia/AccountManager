@@ -1,11 +1,11 @@
 package account_manager.service;
 
 import account_manager.service.validator.CardValidator;
-import account_manager.repository.entity.Account;
-import account_manager.repository.entity.Client;
-import account_manager.repository.entity.Currency;
-import account_manager.repository.entity.Card;
-import account_manager.repository.CardRepository;
+import account_manager.repository.account.Account;
+import account_manager.repository.client.Client;
+import account_manager.repository.currency.Currency;
+import account_manager.repository.card.Card;
+import account_manager.repository.card.CardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class CardService {
 
     @Transactional
     public Card getById(Integer cardId) {
-        Card card = cardRepository.getById(cardId);
+        Card card = cardRepository.findById(cardId).orElse(null);
         validator.validateGet(card);
         ArrayList<Account> accounts = new ArrayList<>();
         for (Account acc : card.getAccounts()) {
@@ -59,7 +59,7 @@ public class CardService {
 
     public String create(Card card) {
         validator.validateCreate(card);
-        cardRepository.create(card);
+        cardRepository.save(card);
         log.info("Created card #{}", card.getNumber());
         return "Created card #" + card.getNumber();
     }
@@ -71,6 +71,6 @@ public class CardService {
     }
 
     public List<Card> getByAccountId(Integer accountId) {
-        return cardRepository.getByAccountId(accountId);
+        return cardRepository.findByAccountId(accountId);
     }
 }

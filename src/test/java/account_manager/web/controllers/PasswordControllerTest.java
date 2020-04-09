@@ -2,7 +2,7 @@ package account_manager.web.controllers;
 
 import account_manager.web.WebConfiguration;
 import account_manager.service.EmailService;
-import account_manager.repository.entity.User;
+import account_manager.repository.user.User;
 import account_manager.service.UserService;
 import account_manager.web.controller.PasswordController;
 import account_manager.web.exception_handling.CustomExceptionHandler;

@@ -1,7 +1,7 @@
 package account_manager.web.controller;
 
 import account_manager.service.EmailService;
-import account_manager.repository.entity.User;
+import account_manager.repository.user.User;
 import account_manager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;

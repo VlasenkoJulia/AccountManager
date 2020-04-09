@@ -1,6 +1,8 @@
-package account_manager.repository.entity;
+package account_manager.repository.account;
 
-import account_manager.repository.enums.AccountType;
+import account_manager.repository.card.Card;
+import account_manager.repository.client.Client;
+import account_manager.repository.currency.Currency;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
@@ -50,6 +53,11 @@ public class Account {
             inverseJoinColumns = @JoinColumn(name = "card_id")
     )
     private Set<Card> cards;
+
+    @PrePersist
+    void openDate() {
+        this.openDate = new Date(Calendar.getInstance().getTimeInMillis());
+    }
 
     @Override
     public boolean equals(Object o) {

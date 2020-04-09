@@ -1,7 +1,7 @@
 package account_manager.security;
 
-import account_manager.repository.entity.User;
-import account_manager.repository.UserRepository;
+import account_manager.repository.user.User;
+import account_manager.repository.user.UserRepository;
 import account_manager.service.validator.UserValidator;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,7 +20,7 @@ public class AccountManagerUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.getByUsername(username);
+        User user = userRepository.findById(username).orElse(null);
         validator.validateLoadByUserName(user);
         return new AccountManagerUserDetails(user);
     }

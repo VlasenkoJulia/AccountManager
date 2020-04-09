@@ -1,6 +1,5 @@
-package account_manager.repository;
+package account_manager.repository.client;
 
-import account_manager.repository.entity.Client;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,26 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public class ClientRepository {
+public class CustomizedClientRepositoryImpl
+        implements CustomizedClientRepository<Client, Integer> {
+
     private final SessionFactory sessionFactory;
 
     @Autowired
-    public ClientRepository(SessionFactory sessionFactory) {
+    public CustomizedClientRepositoryImpl(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
-    public Client create(Client client) {
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(client);
-        return client;
-    }
-
-    public Client getById(int id) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.get(Client.class, id);
-    }
-
-    public void deleteById(int id) {
+    @Override
+    public void deleteById(Integer id) {
         Session session = sessionFactory.getCurrentSession();
         Client client = session.get(Client.class, id);
         if (client == null) {
@@ -38,6 +29,7 @@ public class ClientRepository {
         session.delete(client);
     }
 
+    @Override
     public void update(Client client) {
         Session session = sessionFactory.getCurrentSession();
         if (session.get(Client.class, client.getId()) == null) {

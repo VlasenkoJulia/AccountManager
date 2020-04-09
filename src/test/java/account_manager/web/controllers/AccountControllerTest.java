@@ -1,12 +1,12 @@
 package account_manager.web.controllers;
 
 import account_manager.web.WebConfiguration;
-import account_manager.repository.entity.Account;
+import account_manager.repository.account.Account;
 import account_manager.service.AccountService;
-import account_manager.repository.enums.AccountType;
-import account_manager.repository.entity.Client;
+import account_manager.repository.account.AccountType;
+import account_manager.repository.client.Client;
 import account_manager.service.ClientService;
-import account_manager.repository.entity.Currency;
+import account_manager.repository.currency.Currency;
 import account_manager.web.controller.AccountController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;

@@ -1,6 +1,6 @@
 package account_manager.service.validator;
 
-import account_manager.repository.entity.Currency;
+import account_manager.repository.currency.Currency;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.springframework.stereotype.Component;
 

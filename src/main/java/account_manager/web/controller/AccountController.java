@@ -1,9 +1,9 @@
 package account_manager.web.controller;
 
 
-import account_manager.repository.entity.Account;
+import account_manager.repository.account.Account;
 import account_manager.service.AccountService;
-import account_manager.repository.entity.Client;
+import account_manager.repository.client.Client;
 import account_manager.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

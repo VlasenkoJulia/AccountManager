@@ -1,11 +1,11 @@
 package account_manager.service;
 
+import account_manager.repository.account.AccountRepository;
 import account_manager.service.validator.AccountValidator;
-import account_manager.repository.entity.Card;
-import account_manager.repository.entity.Client;
-import account_manager.repository.entity.Currency;
-import account_manager.repository.entity.Account;
-import account_manager.repository.AccountRepository;
+import account_manager.repository.card.Card;
+import account_manager.repository.client.Client;
+import account_manager.repository.currency.Currency;
+import account_manager.repository.account.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class AccountService {
 
     @Transactional
     public Account getById(Integer accountId) {
-        Account account = accountRepository.getById(accountId);
+        Account account = accountRepository.findById(accountId).orElse(null);
         validator.validateGet(account);
         Currency currency = new Currency(
                 account.getCurrency().getCode(),
@@ -59,14 +59,14 @@ public class AccountService {
 
     public String create(Account account) {
         validator.validateCreate(account);
-        Account accountCreated = accountRepository.create(account);
+        Account accountCreated = accountRepository.save(account);
         log.info("Created account #{}", accountCreated.getId());
         return "Created account #" + accountCreated.getId();
     }
 
     public String update(Account account) {
         validator.validateUpdate(account);
-        accountRepository.update(account);
+        accountRepository.save(account);
         log.info("Updated account #{}", account.getId());
         return "Account updated successfully";
     }
@@ -86,6 +86,6 @@ public class AccountService {
 
     public List<Account> getByClientId(Integer clientId) {
         validator.validateGetByClientId(clientId);
-        return accountRepository.getByClientId(clientId);
+        return accountRepository.findAllByClientId(clientId);
     }
 }

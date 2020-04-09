@@ -1,4 +1,4 @@
-package account_manager.repository.entity;
+package account_manager.repository.currency;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

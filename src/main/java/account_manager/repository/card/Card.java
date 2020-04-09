@@ -1,5 +1,6 @@
-package account_manager.repository.entity;
+package account_manager.repository.card;
 
+import account_manager.repository.account.Account;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

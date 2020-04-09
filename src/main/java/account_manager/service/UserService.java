@@ -1,7 +1,7 @@
 package account_manager.service;
 
-import account_manager.repository.entity.User;
-import account_manager.repository.UserRepository;
+import account_manager.repository.user.User;
+import account_manager.repository.user.UserRepository;
 import account_manager.service.validator.UserValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.slf4j.Logger;
@@ -30,28 +30,28 @@ public class UserService {
 
     public String create(User user) {
         validator.validateCreate(user);
-        User byUsername = userRepository.getByUsername(user.getUserName());
+        User byUsername = userRepository.findById(user.getUserName()).orElse(null);
         if (byUsername != null) {
             throw new InputParameterValidationException("User with passed user name has already exist");
         }
-        User byEmail = userRepository.getByEmail(user.getEmail());
+        User byEmail = userRepository.findByEmail(user.getEmail());
         if (byEmail != null) {
             throw new InputParameterValidationException("User with passed email has already exist");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.create(user);
+        userRepository.save(user);
         log.info("Created new user {}", user.getUserName());
         return "User created successfully! You can return to login page and log in!";
     }
 
     public User getByEmail(String email) {
-        User byEmail = userRepository.getByEmail(email);
+        User byEmail = userRepository.findByEmail(email);
         validator.validateGetByEmail(byEmail);
         return byEmail;
     }
 
     public User getByResetToken(String token) {
-        User byResetToken = userRepository.getByResetToken(token);
+        User byResetToken = userRepository.findByResetToken(token);
         validator.validateGetByResetToken(byResetToken);
         return byResetToken;
     }

@@ -1,7 +1,7 @@
 package account_manager.service;
 
-import account_manager.repository.entity.Client;
-import account_manager.repository.ClientRepository;
+import account_manager.repository.client.Client;
+import account_manager.repository.client.ClientRepository;
 import account_manager.service.validator.ClientValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,14 @@ public class ClientService {
     }
 
     public Client getById(Integer clientId) {
-        Client client = clientRepository.getById(clientId);
+        Client client = clientRepository.findById(clientId).orElse(null);
         validator.validateGet(client);
         return client;
     }
 
     public String create(Client client) {
         validator.validateCreate(client);
-        Client clientCreated = clientRepository.create(client);
+        Client clientCreated = clientRepository.save(client);
         log.info("Created client #{}", clientCreated.getId());
         return "Created client #" + clientCreated.getId();
     }

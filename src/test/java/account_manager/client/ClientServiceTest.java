@@ -1,7 +1,7 @@
 package account_manager.client;
 
-import account_manager.repository.entity.Client;
-import account_manager.repository.ClientRepository;
+import account_manager.repository.client.Client;
+import account_manager.repository.client.ClientRepository;
 import account_manager.service.ClientService;
 import account_manager.service.validator.ClientValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -30,7 +32,7 @@ public class ClientServiceTest {
 
     @Test(expected = InputParameterValidationException.class)
     public void getById_ClientNotFound_ShouldThrowException() {
-        when(clientRepository.getById(1)).thenReturn(null);
+        when(clientRepository.findById(1)).thenReturn(Optional.empty());
         doThrow(InputParameterValidationException.class).when(validator).validateGet(null);
         clientService.getById(1);
     }
@@ -38,7 +40,7 @@ public class ClientServiceTest {
     @Test
     public void getById_ClientFound_ShouldReturnClient() {
         Client client = createClient(1);
-        when(clientRepository.getById(1)).thenReturn(client);
+        when(clientRepository.findById(1)).thenReturn(Optional.of(client));
         doNothing().when(validator).validateGet(client);
         Client clientFound = clientService.getById(1);
         assertEquals(client, clientFound);
@@ -55,7 +57,7 @@ public class ClientServiceTest {
     public void create_ClientIsValid_ShouldReturnSuccessMessage() {
         Client client = createClient(null);
         doNothing().when(validator).validateCreate(client);
-        when(clientRepository.create(client)).thenReturn(createClient(1));
+        when(clientRepository.save(client)).thenReturn(createClient(1));
         String message = clientService.create(client);
         Assert.assertEquals("Created client #1", message);
     }

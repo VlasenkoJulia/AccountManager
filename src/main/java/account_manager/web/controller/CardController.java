@@ -1,7 +1,7 @@
 package account_manager.web.controller;
 
 
-import account_manager.repository.entity.Card;
+import account_manager.repository.card.Card;
 import account_manager.service.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

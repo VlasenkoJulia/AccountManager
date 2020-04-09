@@ -1,7 +1,7 @@
 package account_manager.web.controller;
 
 
-import account_manager.repository.entity.Client;
+import account_manager.repository.client.Client;
 import account_manager.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

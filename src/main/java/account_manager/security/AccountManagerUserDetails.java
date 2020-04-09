@@ -1,6 +1,6 @@
 package account_manager.security;
 
-import account_manager.repository.entity.User;
+import account_manager.repository.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

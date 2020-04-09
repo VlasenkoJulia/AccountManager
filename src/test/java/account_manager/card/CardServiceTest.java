@@ -1,11 +1,11 @@
 package account_manager.card;
 
-import account_manager.repository.entity.Account;
-import account_manager.repository.enums.AccountType;
-import account_manager.repository.entity.Client;
-import account_manager.repository.entity.Currency;
-import account_manager.repository.entity.Card;
-import account_manager.repository.CardRepository;
+import account_manager.repository.account.Account;
+import account_manager.repository.account.AccountType;
+import account_manager.repository.client.Client;
+import account_manager.repository.currency.Currency;
+import account_manager.repository.card.Card;
+import account_manager.repository.card.CardRepository;
 import account_manager.service.CardService;
 import account_manager.service.validator.CardValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -37,7 +38,7 @@ public class CardServiceTest {
 
     @Test(expected = InputParameterValidationException.class)
     public void getById_CardNotFound_ShouldThrowException() {
-        when(cardRepository.getById(1)).thenReturn(null);
+        when(cardRepository.findById(1)).thenReturn(Optional.empty());
         doThrow(InputParameterValidationException.class).when(validator).validateGet(null);
         cardService.getById(1);
     }
@@ -49,7 +50,7 @@ public class CardServiceTest {
         Account account = new Account(1, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
         Card card = createCard(1, "111");
         card.setAccounts(new ArrayList<>(Collections.singletonList(account)));
-        when(cardRepository.getById(1)).thenReturn(card);
+        when(cardRepository.findById(1)).thenReturn(Optional.of(card));
         doNothing().when(validator).validateGet(card);
         Card foundCard = cardService.getById(1);
         Assert.assertEquals(card, foundCard);
@@ -66,7 +67,8 @@ public class CardServiceTest {
     public void create_CardValid_ShouldReturnSuccessMessage() {
         Card card = createCard(null, "111");
         doNothing().when(validator).validateCreate(card);
-        doNothing().when(cardRepository).create(card);
+        card.setId(1);
+        when(cardRepository.save(card)).thenReturn(card);
         String message = cardService.create(card);
         Assert.assertEquals("Created card #111", message);
     }

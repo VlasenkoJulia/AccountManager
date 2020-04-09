@@ -1,8 +1,8 @@
 package account_manager.web.controllers;
 
 import account_manager.web.WebConfiguration;
-import account_manager.repository.entity.Account;
-import account_manager.repository.entity.Card;
+import account_manager.repository.account.Account;
+import account_manager.repository.card.Card;
 import account_manager.service.CardService;
 import account_manager.web.controller.CardController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
