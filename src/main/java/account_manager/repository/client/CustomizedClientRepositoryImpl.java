@@ -1,41 +1,33 @@
 package account_manager.repository.client;
 
 import account_manager.web.exception_handling.InputParameterValidationException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @Repository
 @Transactional
 public class CustomizedClientRepositoryImpl
         implements CustomizedClientRepository<Client, Integer> {
-
-    private final SessionFactory sessionFactory;
-
-    @Autowired
-    public CustomizedClientRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public void deleteById(Integer id) {
-        Session session = sessionFactory.getCurrentSession();
-        Client client = session.get(Client.class, id);
+        Client client = em.find(Client.class, id);
         if (client == null) {
             throw new InputParameterValidationException("Client with passed ID do not exist");
         }
-        session.delete(client);
+        em.remove(client);
     }
 
     @Override
     public void update(Client client) {
-        Session session = sessionFactory.getCurrentSession();
-        if (session.get(Client.class, client.getId()) == null) {
+        if (em.find(Client.class, client.getId()) == null) {
             throw new InputParameterValidationException("Client with passed ID do not exist");
         }
-        session.evict(client);
-        session.merge(client);
+        em.merge(client);
     }
 }
