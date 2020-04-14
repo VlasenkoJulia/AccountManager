@@ -1,13 +1,15 @@
 package account_manager.account;
 
+import account_manager.repository.account.Account;
 import account_manager.repository.account.AccountRepository;
+import account_manager.repository.account.AccountType;
 import account_manager.repository.card.Card;
-import account_manager.service.CardService;
 import account_manager.repository.client.Client;
 import account_manager.repository.currency.Currency;
-import account_manager.repository.account.Account;
-import account_manager.repository.account.AccountType;
 import account_manager.service.AccountService;
+import account_manager.service.CardService;
+import account_manager.service.converter.Converter;
+import account_manager.service.dto.AccountDto;
 import account_manager.service.validator.AccountValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import org.junit.Assert;
@@ -17,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.Instant;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
@@ -28,6 +31,8 @@ public class AccountServiceTest {
     AccountValidator validator;
     @Mock
     CardService cardService;
+    @Mock
+    Converter<Account, AccountDto> converter;
     @InjectMocks
     AccountService accountService;
 
@@ -47,50 +52,61 @@ public class AccountServiceTest {
     public void getById_AccountFound_ShouldReturnAccount() {
         Client client = new Client(1, "John", "Doe");
         Currency currency = new Currency("840", 1.0, "US Dollar", "USD");
-        Account account = new Account(1, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
+        Account account = new Account(1, "111", currency, AccountType.CURRENT, 1.0, Instant.ofEpochSecond(0L), client, Collections.emptySet());
+        AccountDto accountDto = new AccountDto(1, "111", "840", "CURRENT", 1.0, "01.01.1970", 1);
         when(accountRepository.findById(1)).thenReturn(Optional.of(account));
         doNothing().when(validator).validateGet(account);
-        Account accountFound = accountService.getById(1);
-        Assert.assertEquals(account, accountFound);
+        when(converter.convertFrom(account)).thenReturn(accountDto);
+        AccountDto accountFound = accountService.getById(1);
+        Assert.assertEquals(accountDto, accountFound);
     }
 
     @Test(expected = InputParameterValidationException.class)
     public void create_AccountIsNotValid_ShouldThrowException() {
+        AccountDto accountDto = createAccountDto(1);
         Account account = createAccount(1);
+        when(converter.convertTo(accountDto)).thenReturn(account);
         doThrow(InputParameterValidationException.class).when(validator).validateCreate(account);
-        accountService.create(account);
+        accountService.create(accountDto);
     }
 
     @Test
     public void create_AccountValid_ShouldReturnSuccessMessage() {
+        AccountDto accountDto = new AccountDto();
         Account account = createAccount(null);
+        when(converter.convertTo(accountDto)).thenReturn(account);
         doNothing().when(validator).validateCreate(account);
         when(accountRepository.save(account)).thenReturn(createAccount(1));
-        String message = accountService.create(account);
+        String message = accountService.create(accountDto);
         Assert.assertEquals("Created account #1", message);
     }
 
     @Test(expected = InputParameterValidationException.class)
     public void update_AccountIsNotValid_ShouldThrowException() {
+        AccountDto accountDto = new AccountDto();
         Account account = createAccount(null);
+        when(converter.convertTo(accountDto)).thenReturn(account);
         doThrow(InputParameterValidationException.class).when(validator).validateUpdate(account);
-        accountService.update(account);
+        accountService.update(accountDto);
     }
 
     @Test
     public void update_AccountValid_ShouldReturnSuccessMessage() {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setId(1);
         Account account = createAccount(1);
+        when(converter.convertTo(accountDto)).thenReturn(account);
         doNothing().when(validator).validateUpdate(account);
         doNothing().when(accountRepository).update(account);
-        String message = accountService.update(account);
+        String message = accountService.update(accountDto);
         Assert.assertEquals("Account updated successfully", message);
     }
 
     @Test
     public void deleteById_ClientIdIsValid_ShouldReturnSuccessMessage() {
-        ArrayList<Card> cards = new ArrayList<>();
+        Set<Card> cards = new HashSet<>();
 
-        ArrayList<Account> accounts = new ArrayList<>(Collections.singletonList(new Account()));
+        List<Account> accounts = new ArrayList<>(Collections.singletonList(new Account()));
         HashSet<Card> accountCards = new HashSet<>(
                 Collections.singletonList(new Card(1, "111", Collections.emptyList())));
         accounts.get(0).setCards(accountCards);
@@ -114,15 +130,23 @@ public class AccountServiceTest {
     @Test
     public void getByClientId_ClientIdIsValid_ShouldReturnListOfAccounts() {
         doNothing().when(validator).validateGetByClientId(1);
-        List<Account> accounts = Arrays.asList(createAccount(1), createAccount(2));
+        List<Account> accounts = Collections.singletonList(createAccount(1));
+        List<AccountDto> accountDtos = Collections.singletonList(createAccountDto(1));
         when(accountRepository.findAllByClientId(1)).thenReturn(accounts);
-        List<Account> accountsByClientId = accountService.getByClientId(1);
-        Assert.assertEquals(accounts, accountsByClientId);
+        when(converter.convertFrom(accounts.get(0))).thenReturn(accountDtos.get(0));
+        List<AccountDto> accountsByClientId = accountService.getByClientId(1);
+        Assert.assertEquals(accountDtos, accountsByClientId);
     }
 
     private Account createAccount(Integer id) {
         Account account = new Account();
         account.setId(id);
         return account;
+    }
+
+    private AccountDto createAccountDto(Integer id) {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setId(id);
+        return accountDto;
     }
 }

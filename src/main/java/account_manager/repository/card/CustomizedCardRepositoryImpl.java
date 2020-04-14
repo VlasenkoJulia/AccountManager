@@ -12,7 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
-import java.util.List;
+import java.util.Set;
 
 @Repository
 public class CustomizedCardRepositoryImpl
@@ -39,7 +39,7 @@ public class CustomizedCardRepositoryImpl
     }
 
     @Override
-    public List<Card> findByAccountId(Integer accountId) {
+    public Set<Card> findByAccountId(Integer accountId) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Card> criteriaQuery = criteriaBuilder.createQuery(Card.class);
@@ -50,6 +50,6 @@ public class CustomizedCardRepositoryImpl
         Join<Account, Card> accounts = accountRoot.join("cards");
         CriteriaQuery<Card> cq = criteriaQuery.select(accounts);
         TypedQuery<Card> query = session.createQuery(cq);
-        return query.getResultList();
+        return Set.copyOf(query.getResultList());
     }
 }

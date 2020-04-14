@@ -1,11 +1,11 @@
 package account_manager.currency_converter;
 
-import account_manager.repository.account.Account;
-import account_manager.service.dto.ConversionDto;
 import account_manager.repository.currency.Currency;
-import account_manager.service.CurrencyConverter;
 import account_manager.service.AccountService;
+import account_manager.service.CurrencyConverter;
 import account_manager.service.CurrencyService;
+import account_manager.service.dto.AccountDto;
+import account_manager.service.dto.ConversionDto;
 import account_manager.web.exception_handling.CurrencyConversionValidationException;
 import account_manager.web.exception_handling.InputParameterValidationException;
 import junitparams.JUnitParamsRunner;
@@ -34,8 +34,8 @@ public class CurrencyConverterTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(accountService.getById(VALID_SOURCE_ID)).thenReturn(createAccount(VALID_SOURCE_ID, 2000.0, "980", 27.15));
-        when(accountService.getById(VALID_TARGET_ID)).thenReturn(createAccount(VALID_TARGET_ID, 2000.0, "978", 0.88));
+        when(accountService.getById(VALID_SOURCE_ID)).thenReturn(createAccountDto(VALID_SOURCE_ID, 2000.0, "980"));
+        when(accountService.getById(VALID_TARGET_ID)).thenReturn(createAccountDto(VALID_TARGET_ID, 2000.0, "978"));
         when(currencyService.getByCode("980")).thenReturn(createCurrency("980", 27.15));
         when(currencyService.getByCode("978")).thenReturn(createCurrency("978", 0.88));
     }
@@ -56,7 +56,7 @@ public class CurrencyConverterTest {
 
     @Test(expected = CurrencyConversionValidationException.class)
     public void shouldThrowExceptionIfNotEnoughBalance() {
-        when(accountService.getById(VALID_SOURCE_ID)).thenReturn(createAccount(VALID_SOURCE_ID, 10.0));
+        when(accountService.getById(VALID_SOURCE_ID)).thenReturn(createAccountDto(VALID_SOURCE_ID, 10.0, "840"));
         currencyConverter.convert(new ConversionDto(VALID_SOURCE_ID, VALID_TARGET_ID, VALID_AMOUNT));
     }
 
@@ -66,23 +66,17 @@ public class CurrencyConverterTest {
         double exchangeRate = 0.88 / 27.15;
         double amountToAdd = Math.round((VALID_AMOUNT * exchangeRate) * 100.0) / 100.0;
         currencyConverter.convert(conversionDto);
-        verify(accountService).update(refEq(createAccount(VALID_SOURCE_ID, 1000.0, "980", 27.15)));
-        verify(accountService).update(refEq(createAccount(VALID_TARGET_ID, (2000.0 + amountToAdd), "978", 0.88)));
+        verify(accountService).update(refEq(createAccountDto(VALID_SOURCE_ID, 1000.0, "980")));
+        verify(accountService).update(refEq(createAccountDto(VALID_TARGET_ID, (2000.0 + amountToAdd), "978")));
     }
 
-    private Account createAccount(Integer id, double balance) {
-        Account account = new Account();
-        account.setId(id);
-        account.setBalance(balance);
-        return account;
-    }
 
-    private Account createAccount(Integer id, double balance, String currencyCode, double currencyRate) {
-        Account account = new Account();
-        account.setId(id);
-        account.setBalance(balance);
-        account.setCurrency(createCurrency(currencyCode, currencyRate));
-        return account;
+    private AccountDto createAccountDto(Integer id, double balance, String currencyCode) {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setId(id);
+        accountDto.setBalance(balance);
+        accountDto.setCurrencyCode(currencyCode);
+        return accountDto;
     }
 
     private Currency createCurrency(String code, double rate) {

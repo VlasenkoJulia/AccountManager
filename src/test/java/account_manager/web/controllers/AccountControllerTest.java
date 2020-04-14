@@ -1,12 +1,10 @@
 package account_manager.web.controllers;
 
-import account_manager.web.WebConfiguration;
-import account_manager.repository.account.Account;
 import account_manager.service.AccountService;
-import account_manager.repository.account.AccountType;
-import account_manager.repository.client.Client;
 import account_manager.service.ClientService;
-import account_manager.repository.currency.Currency;
+import account_manager.service.dto.AccountDto;
+import account_manager.service.dto.ClientDto;
+import account_manager.web.WebConfiguration;
 import account_manager.web.controller.AccountController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
@@ -28,7 +26,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -61,56 +58,35 @@ public class AccountControllerTest {
             + "  \"type\": \"INVALID\"\n"
             + "}";
 
-    private Client client = new Client(1, "John", "Doe");
-    private Currency currency = new Currency("840", 1.0, "US Dollar", "USD");
-    private Account accountWithNotNullId = new Account(1, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
-    private final String ACCOUNT_WITH_NOT_NULL_ID_JSON = "{\n"
+    private ClientDto client = new ClientDto(1, "John", "Doe");
+    private AccountDto accountDtoWithNotNullId = new AccountDto(1, "111", "840", "CURRENT", 1.0, "01.01.1970", 1);
+    private final String ACCOUNT_DTO_WITH_NOT_NULL_ID_JSON = "{\n"
             + "  \"id\": 1,\n"
             + "  \"number\": \"111\",\n"
-            + "  \"currency\": {\n"
-            + "    \"code\": \"840\",\n"
-            + "    \"rate\": 1.0,\n"
-            + "    \"name\": \"US Dollar\",\n"
-            + "    \"iso\": \"USD\"\n"
-            + "  },\n"
+            + "  \"currencyCode\": \"840\",\n"
             + "  \"type\": \"CURRENT\",\n"
             + "  \"balance\": 1.0,\n"
-            + "  \"openDate\": \"01.01.1970\",\n"
-            + "  \"client\": {\n"
-            + "    \"id\": 1,\n"
-            + "    \"lastName\": \"John\",\n"
-            + "    \"firstName\": \"Doe\"\n"
-            + "  },\n"
-            + "  \"cards\": []\n"
+            + "  \"openDate\": \"01.01.1970\", \n"
+            + "  \"ownerId\": 1\n"
             + "}";
 
-    private Account accountWithNullId = new Account(null, "111", currency, AccountType.CURRENT, 1.0, new Date(1L), client, Collections.emptySet());
-    private final String ACCOUNT_WITH_NULL_ID_JSON = "{\n"
+    private AccountDto accountDtoWithNullId = new AccountDto(null, "111", "840", "CURRENT", 1.0, "01.01.1970", 1);
+    private final String ACCOUNT_DTO_WITH_NULL_ID_JSON = "{\n"
             + "  \"id\": null,\n"
             + "  \"number\": \"111\",\n"
-            + "  \"currency\": {\n"
-            + "    \"code\": \"980\",\n"
-            + "    \"rate\": 1.0,\n"
-            + "    \"name\": \"US Dollar\",\n"
-            + "    \"iso\": \"USD\"\n"
-            + "  },\n"
+            + "  \"currencyCode\": \"840\",\n"
             + "  \"type\": \"CURRENT\",\n"
             + "  \"balance\": 1.0,\n"
-            + "  \"openDate\": \"01.01.1970\",\n"
-            + "  \"client\": {\n"
-            + "    \"id\": 1,\n"
-            + "    \"lastName\": \"John\",\n"
-            + "    \"firstName\": \"Doe\"\n"
-            + "  },\n"
-            + "  \"cards\": []\n"
+            + "  \"openDate\": \"01.01.1970\", \n"
+            + "  \"ownerId\": 1\n"
             + "}";
 
     @Test
     public void getAccountById_AccountFound_ShouldReturnFoundAccount() throws Exception {
-        when(accountService.getById(1)).thenReturn(accountWithNotNullId);
+        when(accountService.getById(1)).thenReturn(accountDtoWithNotNullId);
         mockMvc.perform(get("/account?accountId=1"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(ACCOUNT_WITH_NOT_NULL_ID_JSON));
+                .andExpect(content().json(ACCOUNT_DTO_WITH_NOT_NULL_ID_JSON));
     }
 
     @Test
@@ -124,10 +100,10 @@ public class AccountControllerTest {
 
     @Test
     public void createAccount_InvalidAccount_ShouldReturnErrorDto() throws Exception {
-        when(accountService.create(accountWithNotNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
+        when(accountService.create(accountDtoWithNotNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(post("/account")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(ACCOUNT_WITH_NOT_NULL_ID_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ACCOUNT_DTO_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
@@ -135,10 +111,10 @@ public class AccountControllerTest {
 
     @Test
     public void createAccount_AccountIsValid_ShouldReturnSuccessMessage() throws Exception {
-        when(accountService.create(accountWithNullId)).thenReturn("Created account #1");
+        when(accountService.create(accountDtoWithNullId)).thenReturn("Created account #1");
         MvcResult result = mockMvc.perform(post("/account")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(ACCOUNT_WITH_NULL_ID_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ACCOUNT_DTO_WITH_NULL_ID_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         String body = result.getResponse().getContentAsString();
@@ -147,10 +123,10 @@ public class AccountControllerTest {
 
     @Test
     public void updateAccount_AccountIsValid_ShouldReturnSuccessMessage() throws Exception {
-        when(accountService.update(accountWithNotNullId)).thenReturn("Account updated successfully");
+        when(accountService.update(accountDtoWithNotNullId)).thenReturn("Account updated successfully");
         MvcResult result = mockMvc.perform(put("/account")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(ACCOUNT_WITH_NOT_NULL_ID_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(ACCOUNT_DTO_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
         String body = result.getResponse().getContentAsString();
@@ -159,10 +135,10 @@ public class AccountControllerTest {
 
     @Test
     public void updateAccount_AccountIsInvalid_ShouldReturnErrorDto() throws Exception {
-        when(accountService.update(accountWithNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
+        when(accountService.update(accountDtoWithNullId)).thenThrow(new InputParameterValidationException(EXCEPTION_MESSAGE));
         mockMvc.perform(put("/account")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(ACCOUNT_WITH_NULL_ID_JSON))
+                .content(ACCOUNT_DTO_WITH_NULL_ID_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(ERROR_DTO_JSON));
@@ -180,7 +156,7 @@ public class AccountControllerTest {
 
     @Test
     public void getByClientId_AccountsAndClientFound_ShouldRenderAccountsByClientView() throws Exception {
-        List<Account> accounts = Collections.singletonList(accountWithNotNullId);
+        List<AccountDto> accounts = Collections.singletonList(accountDtoWithNotNullId);
         when(clientService.getById(1)).thenReturn(client);
         when(accountService.getByClientId(1)).thenReturn(accounts);
         mockMvc.perform(get("/account/get-by-client?clientId=1"))

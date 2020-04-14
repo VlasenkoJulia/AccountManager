@@ -59,19 +59,13 @@ $(document).ready(function () {
         });
         let row = $(this).closest('tr');
         let account = {};
-        let owner = {};
-        let currency = {};
-        owner.id = $(row).find(".owner_id").text();
-
-        currency.code = $(row).find(".currency_code").text();
-
         account.id = $(row).find(".account_id").text();
         account.number = $(row).find(".number").text();
+        account.ownerId = $(row).find(".owner_id").text();
+        account.currencyCode = $(row).find(".currency_code").text();
         account.type = $(row).find(".type").text();
-        account.openDate = $(row).find(".open_date").text();
         account.balance = $(row).find(".balance").text();
-        account.currency = currency;
-        account.client = owner;
+        account.openDate = $(row).find(".open_date").text();
         let body = JSON.stringify(account);
         let buttons = $(this).closest('tr').find("button");
         $.ajax({
@@ -113,21 +107,13 @@ $(document).ready(function () {
     $("#create-submit").click(function () {
         let form = $("#create-account-form");
         let account = {};
-        let owner = {};
-        let currency = {};
-        owner.id = $(form).find("[name=ownerId]").val();
-        owner.lastName = $(form).find("[name=last_name]").val();
-        owner.firstName = $(form).find("[name=first_name]").val();
-
-        currency.code = $(form).find("[name=currencyCode]").find('option:selected').val();
-
+        account.ownerId = $(form).find("[name=ownerId]").val();
+        account.currencyCode = $(form).find("[name=currencyCode]").find('option:selected').val();
         account.number = $(form).find("[name=number]").val();
         account.type = $(form).find("[name=type]").find('option:selected').val();
         if (account.type === "") {
             account.type = null;
         }
-        account.currency = currency;
-        account.client = owner;
         let body = JSON.stringify(account);
         $.ajax({
             url: 'http://localhost:8080/account',

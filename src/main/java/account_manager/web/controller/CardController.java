@@ -1,8 +1,8 @@
 package account_manager.web.controller;
 
 
-import account_manager.repository.card.Card;
 import account_manager.service.CardService;
+import account_manager.service.dto.CardDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +18,13 @@ public class CardController {
 
     @GetMapping
     @ResponseBody
-    public Card getCardById(@RequestParam Integer cardId) {
+    public CardDto getCardById(@RequestParam Integer cardId) {
         return cardService.getById(cardId);
     }
 
     @PostMapping
     @ResponseBody
-    public String createCard(@RequestBody Card card) {
+    public String createCard(@RequestBody CardDto card) {
         return cardService.create(card);
     }
 

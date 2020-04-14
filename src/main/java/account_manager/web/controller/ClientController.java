@@ -1,8 +1,8 @@
 package account_manager.web.controller;
 
 
-import account_manager.repository.client.Client;
 import account_manager.service.ClientService;
+import account_manager.service.dto.ClientDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,19 +18,19 @@ public class ClientController {
 
     @GetMapping
     @ResponseBody
-    public Client getClientById(@RequestParam Integer clientId) {
+    public ClientDto getClientById(@RequestParam Integer clientId) {
         return clientService.getById(clientId);
     }
 
     @PostMapping
     @ResponseBody
-    public String createClient(@RequestBody Client client){
+    public String createClient(@RequestBody ClientDto client) {
         return clientService.create(client);
     }
 
     @PutMapping
     @ResponseBody
-    public String updateClient(@RequestBody Client client){
+    public String updateClient(@RequestBody ClientDto client) {
         return clientService.update(client);
     }
 

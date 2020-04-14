@@ -1,9 +1,8 @@
 package account_manager.web.controllers;
 
-import account_manager.web.WebConfiguration;
-import account_manager.repository.account.Account;
-import account_manager.repository.card.Card;
 import account_manager.service.CardService;
+import account_manager.service.dto.CardDto;
+import account_manager.web.WebConfiguration;
 import account_manager.web.controller.CardController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
@@ -24,8 +23,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -56,23 +53,23 @@ public class CardControllerTest {
             + "  \"message\": \"Exception message\",\n"
             + "  \"type\": \"INVALID\"\n"
             + "}";
-    private List<Account> accounts = new ArrayList<>(Collections.singletonList(new Account()));
-    private Card cardWithNotNullId = new Card(1, "111", accounts);
+    private List<Integer> accountIds = List.of(1);
+    private CardDto cardWithNotNullId = new CardDto(1, "111", accountIds);
     private final String CARD_WITH_NOT_NULL_ID_JSON = "{\n"
             + "  \"id\": 1,\n"
             + "  \"number\": \"111\",\n"
-            + "  \"accounts\": [\n"
-            + "    {}\n"
-            + "  ]\n"
+            + "  \"accountIds\": ["
+            + "1"
+            + "]\n"
             + "}";
 
-    private Card cardWithNullId = new Card(null, "111", accounts);
+    private CardDto cardWithNullId = new CardDto(null, "111", accountIds);
     private final String CARD_WITH_NULL_ID_JSON = "{\n"
             + "  \"id\": null,\n"
             + "  \"number\": \"111\",\n"
-            + "  \"accounts\": [\n"
-            + "    {}\n"
-            + "  ]\n"
+            + "  \"accountIds\": ["
+            + "1"
+            + "]\n"
             + "}";
 
 
@@ -108,7 +105,7 @@ public class CardControllerTest {
     public void createCard_CardIsValid_ShouldReturnSuccessMessage() throws Exception {
         when(cardService.create(cardWithNullId)).thenReturn("Created card #111");
         MvcResult result = mockMvc.perform(post("/card")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(CARD_WITH_NULL_ID_JSON))
                 .andExpect(status().isOk())
                 .andReturn();

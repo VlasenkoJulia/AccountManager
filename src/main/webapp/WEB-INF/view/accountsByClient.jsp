@@ -36,11 +36,11 @@
             </td>
             <td class="account_id">${account.id}</td>
             <td class="number data">${account.number}</td>
-            <td class="currency_code data">${account.currency.code}</td>
+            <td class="currency_code data">${account.currencyCode}</td>
             <td class="type data">${account.type}</td>
-            <td class="open_date data"><fmt:formatDate value="${account.openDate}" pattern="dd.MM.yyyy"/></td>
+            <td class="open_date data">${account.openDate}</td>
             <td class="balance data">${account.balance}</td>
-            <td class="owner_id data">${account.client.id}</td>
+            <td class="owner_id data">${account.ownerId}</td>
             <td>
                 <button class="edit"><i class="material-icons">edit</i></button>
             </td>
@@ -68,7 +68,7 @@
             <option value="" hidden disabled selected>Choose account to withdraw money for conversion</option>
             <c:forEach items="${accounts}" var="account">
                 <option value="${account.id}">(#${account.id}) ${account.number};
-                    current balance: ${account.balance}(${account.currency.code})
+                    current balance: ${account.balance}(${account.currencyCode})
                 </option>
             </c:forEach>
         </select>
@@ -78,7 +78,7 @@
             <option value="" hidden disabled selected>Choose account to deposit converted money</option>
             <c:forEach items="${accounts}" var="account">
                 <option value="${account.id}">(#${account.id}) ${account.number};
-                    current balance: ${account.balance}(${account.currency.code})
+                    current balance: ${account.balance}(${account.currencyCode})
                 </option>
             </c:forEach>
         </select>
@@ -112,8 +112,6 @@
             <option value="CURRENT">Current</option>
         </select>
         <input class="data" type="text" name="ownerId" value="${client.id}" style="display: none;">
-        <input class="data" type="text" name="last_name" value="${client.lastName}" style="display: none;">
-        <input class="data" type="text" name="first_name" value="${client.firstName}" style="display: none;">
         <div class="wrapper">
             <input id="create-submit" type="button" value="Ok">
             <input id="create-cancel" type="button" value="Cancel">

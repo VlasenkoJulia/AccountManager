@@ -3,20 +3,18 @@ package account_manager.repository.account;
 import account_manager.repository.card.Card;
 import account_manager.repository.client.Client;
 import account_manager.repository.currency.Currency;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name="account")
+@Table(name = "account")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,12 +33,10 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountType type;
 
-    private double balance;
+    private Double balance;
 
-    @Temporal(TemporalType.DATE)
     @Column(name = "open_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
-    private Date openDate;
+    private Instant openDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id")
@@ -56,7 +52,7 @@ public class Account {
 
     @PrePersist
     void openDate() {
-        this.openDate = new Date(Calendar.getInstance().getTimeInMillis());
+        this.openDate = Instant.now();
     }
 
     @Override

@@ -1,9 +1,9 @@
 package account_manager.web.controllers;
 
 
-import account_manager.web.WebConfiguration;
-import account_manager.repository.client.Client;
 import account_manager.service.ClientService;
+import account_manager.service.dto.ClientDto;
+import account_manager.web.WebConfiguration;
 import account_manager.web.controller.ClientController;
 import account_manager.web.exception_handling.CustomExceptionHandler;
 import account_manager.web.exception_handling.InputParameterValidationException;
@@ -52,14 +52,14 @@ public class ClientControllerTest {
             + "  \"type\": \"INVALID\"\n"
             + "}";
 
-    private Client clientWithNotNullId = new Client(1, "John", "Doe");
+    private ClientDto clientWithNotNullId = new ClientDto(1, "John", "Doe");
     private final String CLIENT_WITH_NOT_NULL_ID_JSON = "{\n"
             + "  \"id\": 1,\n"
             + "  \"lastName\": \"John\",\n"
             + "  \"firstName\": \"Doe\"\n"
             + "}";
 
-    private Client clientWithNullId = new Client(null, "John", "Doe");
+    private ClientDto clientWithNullId = new ClientDto(null, "John", "Doe");
     private final String CLIENT_WITH_NULL_ID_JSON = "{\n"
             + "  \"id\": null,\n"
             + "  \"lastName\": \"John\",\n"
@@ -99,7 +99,7 @@ public class ClientControllerTest {
     public void createClient_ClientIsValid_ShouldReturnSuccessMessage() throws Exception {
         when(clientService.create(clientWithNullId)).thenReturn("Created client #1");
         MvcResult result = mockMvc.perform(post("/client")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(CLIENT_WITH_NULL_ID_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -111,7 +111,7 @@ public class ClientControllerTest {
     public void updateClient_ClientIsValid_ShouldReturnSuccessMessage() throws Exception {
         when(clientService.update(clientWithNotNullId)).thenReturn("Client updated successfully");
         MvcResult result = mockMvc.perform(put("/client")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(CLIENT_WITH_NOT_NULL_ID_JSON))
                 .andExpect(status().isOk())
                 .andReturn();

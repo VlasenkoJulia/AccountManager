@@ -1,10 +1,10 @@
 package account_manager.web.controller;
 
 
-import account_manager.repository.account.Account;
 import account_manager.service.AccountService;
-import account_manager.repository.client.Client;
 import account_manager.service.ClientService;
+import account_manager.service.dto.AccountDto;
+import account_manager.service.dto.ClientDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,7 @@ public class AccountController {
 
     @GetMapping("/get-by-client")
     public ModelAndView getByClientId(@RequestParam Integer clientId) {
-        Client client = clientService.getById(clientId);
+        ClientDto client = clientService.getById(clientId);
         ModelAndView modelAndView = new ModelAndView("accountsByClient");
         modelAndView.addObject("client", client);
         modelAndView.addObject("accounts", accountService.getByClientId(clientId));
@@ -33,19 +33,19 @@ public class AccountController {
 
     @GetMapping
     @ResponseBody
-    public Account getAccountById(@RequestParam Integer accountId) {
+    public AccountDto getAccountById(@RequestParam Integer accountId) {
         return accountService.getById(accountId);
     }
 
     @PostMapping
     @ResponseBody
-    public String createAccount(@RequestBody Account account) {
+    public String createAccount(@RequestBody AccountDto account) {
         return accountService.create(account);
     }
 
     @PutMapping
     @ResponseBody
-    public String updateAccount(@RequestBody Account account) {
+    public String updateAccount(@RequestBody AccountDto account) {
         return accountService.update(account);
     }
 

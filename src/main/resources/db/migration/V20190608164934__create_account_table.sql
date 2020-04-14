@@ -5,7 +5,7 @@ CREATE TABLE `account`
     `currency_code` varchar(3),
     `type`          varchar(20),
     `balance`       decimal(10, 2) DEFAULT '0.00',
-    `open_date`     date,
+    `open_date`     timestamp ,
     `client_id`     int(11),
     PRIMARY KEY (`id`),
     KEY `client_id_fk` (`client_id`),
