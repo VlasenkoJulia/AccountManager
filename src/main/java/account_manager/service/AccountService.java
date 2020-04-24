@@ -53,7 +53,7 @@ public class AccountService {
         Account account = converter.convertTo(accountDto);
         account.setCards(cardService.getByAccountId(account.getId()));
         validator.validateUpdate(account);
-        accountRepository.save(account);
+        accountRepository.update(account);
         log.info("Updated account #{}", account.getId());
         return "Account updated successfully";
     }
