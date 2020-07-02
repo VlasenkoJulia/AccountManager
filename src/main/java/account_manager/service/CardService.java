@@ -1,6 +1,6 @@
 package account_manager.service;
 
-import account_manager.repository.card.Card;
+import account_manager.repository.card.CardEntity;
 import account_manager.repository.card.CardRepository;
 import account_manager.service.converter.Converter;
 import account_manager.service.dto.CardDto;
@@ -15,13 +15,13 @@ import java.util.Set;
 
 @Service
 public class CardService {
-    private static Logger log = LoggerFactory.getLogger(CardService.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(CardService.class.getName());
     private final CardValidator validator;
     private final CardRepository cardRepository;
-    private final Converter<Card, CardDto> converter;
+    private final Converter<CardEntity, CardDto> converter;
 
     @Autowired
-    public CardService(CardValidator validator, CardRepository cardRepository, Converter<Card, CardDto> converter) {
+    public CardService(CardValidator validator, CardRepository cardRepository, Converter<CardEntity, CardDto> converter) {
         this.validator = validator;
         this.cardRepository = cardRepository;
         this.converter = converter;
@@ -29,13 +29,13 @@ public class CardService {
 
     @Transactional
     public CardDto getById(Integer cardId) {
-        Card card = cardRepository.findById(cardId).orElse(null);
+        CardEntity card = cardRepository.findById(cardId).orElse(null);
         validator.validateGet(card);
         return converter.convertFrom(card);
     }
 
     public String create(CardDto cardDto) {
-        Card card = converter.convertTo(cardDto);
+        CardEntity card = converter.convertTo(cardDto);
         validator.validateCreate(card);
         cardRepository.save(card);
         log.info("Created card #{}", card.getNumber());
@@ -48,7 +48,7 @@ public class CardService {
         return "Deleted card #" + cardId;
     }
 
-    public Set<Card> getByAccountId(Integer accountId) {
+    public Set<CardEntity> getByAccountId(Integer accountId) {
         return cardRepository.findByAccountId(accountId);
     }
 }

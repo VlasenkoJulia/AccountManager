@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AccountRepository extends JpaRepository<Account, Integer>,
-        CustomizedAccountRepository<Account, Integer> {
+public interface AccountRepository extends JpaRepository<AccountEntity, Integer>,
+        CustomizedAccountRepository<AccountEntity, Integer> {
 
-    List<Account> findAllByClientId(Integer clientId);
+    List<AccountEntity> findAllByClientId(Integer clientId);
 }

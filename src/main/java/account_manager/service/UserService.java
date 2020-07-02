@@ -1,6 +1,6 @@
 package account_manager.service;
 
-import account_manager.repository.user.User;
+import account_manager.repository.user.UserEntity;
 import account_manager.repository.user.UserRepository;
 import account_manager.service.validator.UserValidator;
 import account_manager.web.exception_handling.InputParameterValidationException;
@@ -28,13 +28,13 @@ public class UserService {
     }
 
 
-    public String create(User user) {
+    public String create(UserEntity user) {
         validator.validateCreate(user);
-        User byUsername = userRepository.findById(user.getUserName()).orElse(null);
+        UserEntity byUsername = userRepository.findById(user.getUserName()).orElse(null);
         if (byUsername != null) {
             throw new InputParameterValidationException("User with passed user name has already exist");
         }
-        User byEmail = userRepository.findByEmail(user.getEmail());
+        UserEntity byEmail = userRepository.findByEmail(user.getEmail());
         if (byEmail != null) {
             throw new InputParameterValidationException("User with passed email has already exist");
         }
@@ -44,19 +44,19 @@ public class UserService {
         return "User created successfully! You can return to login page and log in!";
     }
 
-    public User getByEmail(String email) {
-        User byEmail = userRepository.findByEmail(email);
+    public UserEntity getByEmail(String email) {
+        UserEntity byEmail = userRepository.findByEmail(email);
         validator.validateGetByEmail(byEmail);
         return byEmail;
     }
 
-    public User getByResetToken(String token) {
-        User byResetToken = userRepository.findByResetToken(token);
+    public UserEntity getByResetToken(String token) {
+        UserEntity byResetToken = userRepository.findByResetToken(token);
         validator.validateGetByResetToken(byResetToken);
         return byResetToken;
     }
 
-    public String resetPassword(User user) {
+    public String resetPassword(UserEntity user) {
         validator.validateReset(user);
         getByResetToken(user.getResetToken());
         user.setResetToken(null);
@@ -66,7 +66,7 @@ public class UserService {
         return "Password changed successfully";
     }
 
-    public String setResetToken(User user) {
+    public String setResetToken(UserEntity user) {
         validator.validateSetResetToken(user);
         userRepository.update(user);
         return "Set token to user " + user.getUserName();

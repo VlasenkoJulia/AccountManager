@@ -1,7 +1,7 @@
 package account_manager.web.controller;
 
+import account_manager.repository.user.UserEntity;
 import account_manager.service.EmailService;
-import account_manager.repository.user.User;
 import account_manager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -30,12 +30,12 @@ public class PasswordController {
     @PostMapping("/forgotPassword")
     @ResponseBody
     public String sendResetMessage(@RequestParam String email) {
-        User user = setResetToken(email);
+        UserEntity user = setResetToken(email);
         sendResetEmail(user);
         return "A password reset link has been sent to " + user.getEmail();
     }
 
-    private void sendResetEmail(User user) {
+    private void sendResetEmail(UserEntity user) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("yuliia.vlasenko90@gmail.com");
         message.setTo(user.getEmail());
@@ -44,8 +44,8 @@ public class PasswordController {
         emailService.sendEmail(message);
     }
 
-    private User setResetToken(String email) {
-        User user = userService.getByEmail(email);
+    private UserEntity setResetToken(String email) {
+        UserEntity user = userService.getByEmail(email);
         user.setResetToken(UUID.randomUUID().toString());
         userService.setResetToken(user);
         return user;
@@ -53,7 +53,7 @@ public class PasswordController {
 
     @GetMapping("/reset")
     public ModelAndView resetPasswordForm(@RequestParam("token") String token) {
-        User user = userService.getByResetToken(token);
+        UserEntity user = userService.getByResetToken(token);
         ModelAndView modelAndView = new ModelAndView("resetPassword");
         modelAndView.addObject("userName", user.getUserName());
         modelAndView.addObject("email", user.getEmail());
@@ -63,8 +63,8 @@ public class PasswordController {
 
     @PostMapping("/resetPassword")
     @ResponseBody
-    public String resetPassword(@RequestBody User user) {
-        return userService.resetPassword(user);
+    public String resetPassword(@RequestBody UserEntity userEntity) {
+        return userService.resetPassword(userEntity);
     }
 
 }

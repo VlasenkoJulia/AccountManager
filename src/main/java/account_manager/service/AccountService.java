@@ -1,8 +1,8 @@
 package account_manager.service;
 
-import account_manager.repository.account.Account;
+import account_manager.repository.account.AccountEntity;
 import account_manager.repository.account.AccountRepository;
-import account_manager.repository.card.Card;
+import account_manager.repository.card.CardEntity;
 import account_manager.service.converter.Converter;
 import account_manager.service.dto.AccountDto;
 import account_manager.service.validator.AccountValidator;
@@ -23,10 +23,10 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountValidator validator;
     private final CardService cardService;
-    private final Converter<Account, AccountDto> converter;
+    private final Converter<AccountEntity, AccountDto> converter;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, AccountValidator validator, CardService cardService, Converter<Account, AccountDto> converter) {
+    public AccountService(AccountRepository accountRepository, AccountValidator validator, CardService cardService, Converter<AccountEntity, AccountDto> converter) {
         this.accountRepository = accountRepository;
         this.validator = validator;
         this.cardService = cardService;
@@ -35,22 +35,22 @@ public class AccountService {
 
     @Transactional
     public AccountDto getById(Integer accountId) {
-        Account account = accountRepository.findById(accountId).orElse(null);
+        AccountEntity account = accountRepository.findById(accountId).orElse(null);
         validator.validateGet(account);
         return converter.convertFrom(account);
     }
 
     public String create(AccountDto accountDto) {
-        Account account = converter.convertTo(accountDto);
+        AccountEntity account = converter.convertTo(accountDto);
         account.setCards(cardService.getByAccountId(account.getId()));
         validator.validateCreate(account);
-        Account accountCreated = accountRepository.save(account);
-        log.info("Created account #{}", accountCreated.getId());
-        return "Created account #" + accountCreated.getId();
+        AccountEntity accountEntityCreated = accountRepository.save(account);
+        log.info("Created account #{}", accountEntityCreated.getId());
+        return "Created account #" + accountEntityCreated.getId();
     }
 
     public String update(AccountDto accountDto) {
-        Account account = converter.convertTo(accountDto);
+        AccountEntity account = converter.convertTo(accountDto);
         account.setCards(cardService.getByAccountId(account.getId()));
         validator.validateUpdate(account);
         accountRepository.update(account);
@@ -59,10 +59,10 @@ public class AccountService {
     }
 
     public String deleteById(Integer accountId) {
-        Set<Card> cards = cardService.getByAccountId(accountId);
-        for (Card card : cards) {
-            List<Account> cardAccounts = card.getAccounts();
-            if (cardAccounts.size() == 1 && cardAccounts.get(0).getId().equals(accountId)) {
+        Set<CardEntity> cards = cardService.getByAccountId(accountId);
+        for (CardEntity card : cards) {
+            List<AccountEntity> cardAccountEntities = card.getAccounts();
+            if (cardAccountEntities.size() == 1 && cardAccountEntities.get(0).getId().equals(accountId)) {
                 cardService.deleteById(card.getId());
             }
         }
@@ -73,7 +73,7 @@ public class AccountService {
 
     public List<AccountDto> getByClientId(Integer clientId) {
         validator.validateGetByClientId(clientId);
-        List<Account> allByClientId = accountRepository.findAllByClientId(clientId);
+        List<AccountEntity> allByClientId = accountRepository.findAllByClientId(clientId);
         return allByClientId.stream().map(converter::convertFrom).collect(Collectors.toList());
     }
 }

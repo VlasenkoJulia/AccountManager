@@ -1,6 +1,6 @@
 package account_manager.service;
 
-import account_manager.repository.currency.Currency;
+import account_manager.repository.currency.CurrencyEntity;
 import account_manager.service.dto.AccountDto;
 import account_manager.service.dto.ConversionDto;
 import account_manager.web.exception_handling.CurrencyConversionValidationException;
@@ -51,8 +51,8 @@ public class CurrencyConverter {
     }
 
     private double calculateExchangeRate(String sourceCurrencyCode, String targetCurrencyCode) {
-        Currency sourceCurrency = currencyService.getByCode(sourceCurrencyCode);
-        Currency targetCurrency = currencyService.getByCode(targetCurrencyCode);
+        CurrencyEntity sourceCurrency = currencyService.getByCode(sourceCurrencyCode);
+        CurrencyEntity targetCurrency = currencyService.getByCode(targetCurrencyCode);
         return targetCurrency.getRate() / sourceCurrency.getRate();
     }
 }

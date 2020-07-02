@@ -11,15 +11,15 @@ import javax.persistence.PersistenceContext;
 @Repository
 @Transactional
 public class CustomizedUserRepositoryImpl
-        implements CustomizedUserRepository<User> {
+        implements CustomizedUserRepository<UserEntity> {
     @PersistenceContext
     private EntityManager em;
 
     @Override
-    public void update(User user) {
-        if (em.find(User.class, user.getUserName()) == null) {
+    public void update(UserEntity userEntity) {
+        if (em.find(UserEntity.class, userEntity.getUserName()) == null) {
             throw new InputParameterValidationException("User with passed username do not exist");
         }
-        em.merge(user);
+        em.merge(userEntity);
     }
 }

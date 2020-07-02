@@ -1,6 +1,6 @@
 package account_manager.web.controller;
 
-import account_manager.repository.user.User;
+import account_manager.repository.user.UserEntity;
 import account_manager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping
     @ResponseBody
-    public String createUser(@RequestBody User user) {
-        return userService.create(user);
+    public String createUser(@RequestBody UserEntity userEntity) {
+        return userService.create(userEntity);
     }
 }

@@ -1,29 +1,34 @@
 package account_manager.service.converter;
 
-import account_manager.repository.client.Client;
+import account_manager.repository.client.ClientEntity;
 import account_manager.service.dto.ClientDto;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClientConverterTest {
-    private ClientConverter clientConverter = new ClientConverter();
+    private final ClientConverter clientConverter = new ClientConverter();
+    private static final ClientEntity CLIENT_ENTITY = new ClientEntity(1, "Doe", "John",
+            "123456789", "Some City", "Some Street", "123", "123");
 
+    private static final ClientDto DTO = new ClientDto(1, "Doe", "John",
+            "123456789", "Some City", "Some Street", "123", "123");
     @Test
     public void convertToEntityFromDto() {
-        ClientDto dto = new ClientDto(1, "Doe", "John");
-        Client client = clientConverter.convertTo(dto);
-        assertThat(client.getId()).isEqualTo(dto.getId());
-        assertThat(client.getFirstName()).isEqualTo(dto.getFirstName());
-        assertThat(client.getLastName()).isEqualTo(dto.getLastName());
+        ClientEntity clientEntityConverted = clientConverter.convertTo(DTO);
+        assertThat(clientEntityConverted.getId()).isEqualTo(CLIENT_ENTITY.getId());
+        assertThat(clientEntityConverted.getFirstName()).isEqualTo(CLIENT_ENTITY.getFirstName());
+        assertThat(clientEntityConverted.getLastName()).isEqualTo(CLIENT_ENTITY.getLastName());
+        assertThat(clientEntityConverted.getSocialNumber()).isEqualTo(CLIENT_ENTITY.getSocialNumber());
+        assertThat(clientEntityConverted.getCity()).isEqualTo(CLIENT_ENTITY.getCity());
+        assertThat(clientEntityConverted.getStreet()).isEqualTo(CLIENT_ENTITY.getStreet());
+        assertThat(clientEntityConverted.getHouseNumber()).isEqualTo(CLIENT_ENTITY.getHouseNumber());
+        assertThat(clientEntityConverted.getApartment()).isEqualTo(CLIENT_ENTITY.getApartment());
     }
 
     @Test
     public void convertFromEntityToDto() {
-        Client client = new Client(1, "Doe", "John");
-        ClientDto clientDto = clientConverter.convertFrom(client);
-        assertThat(clientDto.getId()).isEqualTo(client.getId());
-        assertThat(clientDto.getFirstName()).isEqualTo(client.getFirstName());
-        assertThat(clientDto.getLastName()).isEqualTo(client.getLastName());
+        ClientDto dtoConverted = clientConverter.convertFrom(CLIENT_ENTITY);
+        assertThat(dtoConverted).isEqualTo(DTO);
     }
 }

@@ -7,5 +7,5 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public interface CurrencyRepository extends JpaRepository<Currency, String> {
+public interface CurrencyRepository extends JpaRepository<CurrencyEntity, String> {
 }

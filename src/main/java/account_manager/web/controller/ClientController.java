@@ -6,6 +6,8 @@ import account_manager.service.dto.ClientDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/client")
 public class ClientController {
@@ -17,26 +19,28 @@ public class ClientController {
     }
 
     @GetMapping
-    @ResponseBody
     public ClientDto getClientById(@RequestParam Integer clientId) {
         return clientService.getById(clientId);
     }
 
     @PostMapping
-    @ResponseBody
     public String createClient(@RequestBody ClientDto client) {
         return clientService.create(client);
     }
 
     @PutMapping
-    @ResponseBody
     public String updateClient(@RequestBody ClientDto client) {
         return clientService.update(client);
     }
 
     @DeleteMapping
-    @ResponseBody
     public String deleteClient(@RequestParam Integer clientId) {
         return clientService.deleteById(clientId);
+    }
+
+    @GetMapping("/search")
+    public List<ClientDto> search(@RequestParam String query) {
+        List<ClientDto> search = clientService.search(query);
+        return search;
     }
 }

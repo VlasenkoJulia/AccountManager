@@ -1,7 +1,5 @@
 package account_manager.security;
 
-import account_manager.security.AccountManagerUserDetailsService;
-import account_manager.security.AppSecurityInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -49,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/resetPassword").permitAll()
                 .antMatchers("/forgotPassword").permitAll()
                 .antMatchers("/reset").permitAll()
+                .antMatchers("/indexing").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

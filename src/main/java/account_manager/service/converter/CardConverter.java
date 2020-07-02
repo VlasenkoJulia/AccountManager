@@ -1,7 +1,7 @@
 package account_manager.service.converter;
 
-import account_manager.repository.account.Account;
-import account_manager.repository.card.Card;
+import account_manager.repository.account.AccountEntity;
+import account_manager.repository.card.CardEntity;
 import account_manager.service.dto.CardDto;
 import org.springframework.stereotype.Service;
 
@@ -9,28 +9,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CardConverter implements Converter<Card, CardDto> {
+public class CardConverter implements Converter<CardEntity, CardDto> {
 
     @Override
-    public Card convertTo(CardDto dto) {
-        List<Account> accounts = dto.getAccountIds()
+    public CardEntity convertTo(CardDto dto) {
+        List<AccountEntity> accountEntities = dto.getAccountIds()
                 .stream()
                 .map(this::createAccount)
                 .collect(Collectors.toList());
-        return new Card(dto.getId(), dto.getNumber(), accounts);
+        return new CardEntity(dto.getId(), dto.getNumber(), accountEntities);
     }
 
-    private Account createAccount(Integer id) {
-        Account account = new Account();
-        account.setId(id);
-        return account;
+    private AccountEntity createAccount(Integer id) {
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setId(id);
+        return accountEntity;
     }
 
     @Override
-    public CardDto convertFrom(Card entity) {
+    public CardDto convertFrom(CardEntity entity) {
         List<Integer> accountIds = entity.getAccounts()
                 .stream()
-                .map(Account::getId)
+                .map(AccountEntity::getId)
                 .collect(Collectors.toList());
         return new CardDto(entity.getId(), entity.getNumber(), accountIds);
     }

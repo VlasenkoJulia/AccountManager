@@ -5,6 +5,7 @@
 <html>
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script type="text/javascript" src="<c:url value="/resources/js/index.js"/>"></script>
     <link href="<c:url value="/resources/css/index.css" />" rel="stylesheet">
@@ -22,14 +23,37 @@
         </ul>
     </nav>
 </header>
-<div class="content">
-    <h2>Content</h2>
-    <p>Content</p>
-</div>
+<label>Keywords to search </label>
+<input type="text" name="value">
+<br>
+<input id="submit" type="button" value="Submit">
 
-<div class="footer">
-    <p>Footer</p>
-</div>
-
+<br>
+<br>
+<br>
+<h3>Results</h3>
+<div id="results"></div>
+<script id="table" type="text/x-handlebars-template">
+    <table id="clients">
+        <thead>
+        <tr>
+            {{#each array.[0]}}
+            <th>{{@key}}</th>
+            {{/each}}
+            <th>Accounts</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each array}}
+        <tr>
+            {{#each this}}
+            <td>{{this}}</td>
+            {{/each}}
+            <td><button class="view">View</button></td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</script>
 </body>
 </html>

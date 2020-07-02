@@ -1,6 +1,6 @@
 package account_manager.security;
 
-import account_manager.repository.user.User;
+import account_manager.repository.user.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,10 +10,10 @@ import java.util.Collections;
 import java.util.Objects;
 
 public class AccountManagerUserDetails implements UserDetails {
-    private User user;
+    private UserEntity userEntity;
 
-    public AccountManagerUserDetails(User user) {
-        this.user = user;
+    public AccountManagerUserDetails(UserEntity userEntity) {
+        this.userEntity = userEntity;
     }
 
     @Override
@@ -23,12 +23,12 @@ public class AccountManagerUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return userEntity.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getUserName();
+        return userEntity.getUserName();
     }
 
     @Override
@@ -56,11 +56,11 @@ public class AccountManagerUserDetails implements UserDetails {
         if (this == o) return true;
         if (!(o instanceof AccountManagerUserDetails)) return false;
         AccountManagerUserDetails that = (AccountManagerUserDetails) o;
-        return Objects.equals(user, that.user);
+        return Objects.equals(userEntity, that.userEntity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user);
+        return Objects.hash(userEntity);
     }
 }

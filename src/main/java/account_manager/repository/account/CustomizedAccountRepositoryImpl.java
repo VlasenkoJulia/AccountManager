@@ -10,24 +10,24 @@ import javax.persistence.PersistenceContext;
 @Repository
 @Transactional
 public class CustomizedAccountRepositoryImpl
-        implements CustomizedAccountRepository<Account, Integer> {
+        implements CustomizedAccountRepository<AccountEntity, Integer> {
     @PersistenceContext
     private EntityManager em;
 
     @Override
     public void deleteById(Integer id) {
-        Account account = em.find(Account.class, id);
-        if (account == null) {
+        AccountEntity accountEntity = em.find(AccountEntity.class, id);
+        if (accountEntity == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
-        em.remove(account);
+        em.remove(accountEntity);
     }
 
     @Override
-    public void update(Account account) {
-        if (em.find(Account.class, account.getId()) == null) {
+    public void update(AccountEntity accountEntity) {
+        if (em.find(AccountEntity.class, accountEntity.getId()) == null) {
             throw new InputParameterValidationException("Account with passed ID do not exist");
         }
-        em.merge(account);
+        em.merge(accountEntity);
     }
 }
